@@ -5,7 +5,6 @@ if [ ! -f $SCRIPTPATH/env.sh ]; then
   echo "env.sh doesn't exist, downloading latest..."
   curl "https://raw.githubusercontent.com/netsurf-browser/netsurf/master/docs/env.sh" -o $SCRIPTPATH/env.sh
 fi
-exit
 
 TARGET_WORKSPACE=/opt/netsurf/build
 HOST=arm-remarkable-linux-gnueabihf
