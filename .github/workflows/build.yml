@@ -19,7 +19,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload binary to Release
-        id: upload-release-asset
+        id: upload-binary
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,9 +29,9 @@ jobs:
           asset_name: nsfb
           asset_content_type: application/octet-stream
       - name: Package resources
-        run: tar cvzf resources.tar.gz ./build/netsurf/resources
+        run: tar cvzf resources.tar.gz ./build/netsurf/resources ./build/netsurf/nsfb
       - name: Upload resources to Release
-        id: upload-release-asset
+        id: upload-resources
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
