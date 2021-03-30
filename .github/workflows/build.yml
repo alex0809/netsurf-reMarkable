@@ -8,23 +8,23 @@ jobs:
       - name: Build
         run: docker-compose up
       - name: Create Release
-          id: create_release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: main
-            release_name: NetSurf-reMarkable
-            body: Latest build
-            draft: false
-            prerelease: false
-        - name: Upload binary to Release
-          id: upload-release-asset
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: ./build/netsurf/nsfb
-            asset_name: nsfb
-            asset_content_type: application/octet-stream
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: main
+          release_name: NetSurf-reMarkable
+          body: Latest build
+          draft: false
+          prerelease: false
+      - name: Upload binary to Release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/netsurf/nsfb
+          asset_name: nsfb
+          asset_content_type: application/octet-stream
