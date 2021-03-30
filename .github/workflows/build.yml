@@ -13,8 +13,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: main
-          release_name: NetSurf-reMarkable
+          tag_name: ${{ github.ref }}
+          release_name: Build ${{ github.ref }}
           body: Latest build
           draft: false
           prerelease: false
