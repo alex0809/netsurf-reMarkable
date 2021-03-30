@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  build:
+    build: .
+    volumes:
+      - ./scripts:/opt/netsurf/scripts
+      - ./build:/opt/netsurf/build
+    command: /opt/netsurf/scripts/build.sh
