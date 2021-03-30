@@ -15,9 +15,7 @@ export CFLAGS="$CFLAGS -I$TARGET_WORKSPACE/inst-$HOST/include"
 export LDFLAGS="$LDFLAGS -L$TARGET_WORKSPACE/inst-$HOST/lib" 
 
 echo "Cloning fork of libnsfb"
-#git clone https://github.com/alex0809/libnsfb-reMarkable.git $TARGET_WORKSPACE/libnsfb
-rm -r $TARGET_WORKSPACE/libnsfb/
-cp -r /opt/libnsfb/ $TARGET_WORKSPACE/libnsfb/
+git clone https://github.com/alex0809/libnsfb-reMarkable.git $TARGET_WORKSPACE/libnsfb
 
 ns-clone
 ns-pull-install
