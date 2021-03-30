@@ -18,8 +18,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: release-${{ steps.vars.outputs.sha-short }}
-          release_name: release-${{ steps.vars.outputs.sha-short }}
+          tag_name: commit-${{ steps.vars.outputs.sha-short }}
+          release_name: commit-${{ steps.vars.outputs.sha-short }}
           body: Latest build
           draft: false
           prerelease: false
