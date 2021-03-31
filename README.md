@@ -19,5 +19,5 @@ The contents of the `resources` should be copied to any of these locations:
 ## Building locally
 
 ```
-docker-compose up -d
+docker-compose up
 ```
