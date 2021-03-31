@@ -1,7 +1,7 @@
 FROM ghcr.io/toltec-dev/base:v2.0
 
 RUN apt-get update -y \
-    && apt-get install -y bison flex libexpat-dev git gperf automake libtool
+    && apt-get install -y bison flex libexpat-dev libpng-dev git gperf automake libtool
 
 # Build curl 7.75.0 targeting armhf
 RUN export DEBIAN_FRONTEND=noninteractive \
