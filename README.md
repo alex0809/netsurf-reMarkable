@@ -1,4 +1,4 @@
-# NetSurf-reMarkable
+# NetSurf-reMarkable [![Build for reMarkable](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml/badge.svg)](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml)
 
 This repository contains a script that builds NetSurf for the reMarkable.
 
