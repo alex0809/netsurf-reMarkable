@@ -1,4 +1,4 @@
-FROM ghcr.io/toltec-dev/base:v2.0
+FROM ghcr.io/toltec-dev/base:v1.5
 
 RUN apt-get update -y \
     && apt-get install -y bison flex libexpat-dev libpng-dev git gperf automake libtool
