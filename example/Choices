@@ -1,0 +1,12 @@
+homepage_url:https://remarkable.com
+
+scale:150
+enable_javascript:0
+
+fb_face_sans_serif:/usr/share/fonts/ttf/noto/NotoSans-Regular.ttf
+fb_face_sans_serif_bold:/usr/share/fonts/ttf/noto/NotoSans-Bold.ttf
+fb_face_sans_serif_italic:/usr/share/fonts/ttf/noto/NotoSans-Italic.ttf
+fb_face_sans_serif_italic_bold:/usr/share/fonts/ttf/noto/NotoSans-BoldItalic.ttf
+fb_face_serif:/usr/share/fonts/ttf/noto/NotoSerif-Regular.ttf
+fb_serif_bold:/usr/share/fonts/ttf/noto/NotoSerif-Bold.ttf
+fb_face_monospace:/usr/share/fonts/ttf/noto/NotoMono-Regular.ttf
