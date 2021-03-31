@@ -11,8 +11,11 @@ HOST=arm-remarkable-linux-gnueabihf
 
 source $SCRIPTPATH/env.sh
 
+# Required so the netsurf make picks up the previously built libraries
 export CFLAGS="$CFLAGS -I$TARGET_WORKSPACE/inst-$HOST/include"
 export LDFLAGS="$LDFLAGS -L$TARGET_WORKSPACE/inst-$HOST/lib" 
+# freetype libs end up in /usr/local, so include that for pkg-config
+export PKG_CONFIG_LIBDIR="$PKG_CONFIG_LIBDIR:$SYSROOT/usr/local/lib/pkgconfig"
 
 echo "Cloning fork of libnsfb"
 git clone https://github.com/alex0809/libnsfb-reMarkable.git $TARGET_WORKSPACE/libnsfb
@@ -22,4 +25,4 @@ ns-pull-install
 
 cd $TARGET_WORKSPACE/netsurf/
 export BUILD_CC="arm-remarkable-linux-gnueabihf-gcc"
-make TARGET=framebuffer NETSURF_USE_JPEG=NO CC=$BUILD_CC 
+make TARGET=framebuffer NETSURF_FB_FONTLIB=freetype CC=$BUILD_CC
