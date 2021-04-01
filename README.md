@@ -7,6 +7,15 @@ For details, you can look at the [env.sh](https://github.com/netsurf-browser/net
 
 To support drawing on the reMarkable, [a fork of libnsfb](https://github.com/alex0809/libnsfb-reMarkable) is used.
 
+## Current status
+
+- [X] Build pipeline
+- [X] Screen refresh
+- [ ] Touch support
+- [ ] Pen support
+- [ ] Hardware-button support
+- [ ] Virtual keyboard
+
 ## Installation
 
 Each release contains the `nsfb` binary and a required `resources` folder.
