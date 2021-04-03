@@ -11,10 +11,10 @@ To support drawing on the reMarkable, [a fork of libnsfb](https://github.com/ale
 
 - [X] Build pipeline
 - [X] Screen refresh
-- [ ] Touch support
-- [ ] Pen support
-- [ ] Hardware-button support
-- [ ] Virtual keyboard
+- [X] Touch support
+- [X] Pen support
+- [X] Hardware-button support
+- [X] Virtual keyboard (is already built-in)
 
 ## Installation
 
