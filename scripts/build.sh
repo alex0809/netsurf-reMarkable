@@ -35,7 +35,7 @@ cd $TARGET_WORKSPACE/netsurf/
 # Would probably be nicer to to pkg_config libevdev in the netsurf Makefile,
 # but we are re-pulling that Makefile every build.
 # This works for now.
-export LDFLAGS="$LDFLAGS -levdev"
+export LDFLAGS="$LDFLAGS -levdev -lpthread"
 
 export BUILD_CC="arm-remarkable-linux-gnueabihf-gcc"
 make TARGET=framebuffer NETSURF_FB_FONTLIB=freetype CC=$BUILD_CC
