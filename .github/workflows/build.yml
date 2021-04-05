@@ -25,5 +25,5 @@ jobs:
           files: |
             LICENSE
             nsfb.tar.gz
-            /build/netsurf/nsfb
+            build/netsurf/nsfb
             
