@@ -1,10 +1,7 @@
 # NetSurf-reMarkable [![Build for reMarkable](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml/badge.svg)](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml)
 
 This repository contains a script that builds NetSurf for the reMarkable.
-
-The actual NetSurf source code is cloned during the build. 
-For details, you can look at the [env.sh](https://github.com/netsurf-browser/netsurf/blob/master/docs/env.sh) file that is downloaded during the build.
-
+The source code is cloned during the build, using fixed versions defined in [versions.sh](scripts/versions.sh). 
 To support drawing on the reMarkable, [a fork of libnsfb](https://github.com/alex0809/libnsfb-reMarkable) is used.
 
 ## Current status
