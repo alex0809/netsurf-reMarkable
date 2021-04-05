@@ -12,36 +12,18 @@ jobs:
         run: echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
       - name: Check outputs
         run: echo ${{ steps.vars.outputs.sha_short }}
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: commit-${{ steps.vars.outputs.sha-short }}
-          release_name: commit-${{ steps.vars.outputs.sha-short }}
-          body: Latest build
-          draft: false
-          prerelease: false
-      - name: Upload binary to Release
-        id: upload-binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/netsurf/nsfb
-          asset_name: nsfb
-          asset_content_type: application/octet-stream
       - name: Package resources
+        if: startsWith(github.ref, 'refs/tags/')
         run: tar -C ./build/netsurf -cvzf nsfb.tar.gz resources/ nsfb
-      - name: Upload resources to Release
-        id: upload-resources
-        uses: actions/upload-release-asset@v1
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        id: create_release
+        uses: softprops/actions-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./nsfb.tar.gz
-          asset_name: nsfb.tar.gz
-          asset_content_type: application/gzip
+          files: |
+            LICENSE
+            nsfb.tar.gz
+            /build/netsurf/nsfb
+            
