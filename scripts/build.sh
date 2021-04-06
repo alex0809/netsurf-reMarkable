@@ -1,8 +1,9 @@
 #!/bin/bash
 
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-TARGET_WORKSPACE=/opt/netsurf/build
 HOST=arm-remarkable-linux-gnueabihf
+
+if [ -z "$TARGET_WORKSPACE" ]; then echo "TARGET_WORKSPACE is required, but not set." && exit 1; fi
 
 source $SCRIPTPATH/versions.sh
 source $SCRIPTPATH/env.sh

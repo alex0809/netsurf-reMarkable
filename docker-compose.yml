@@ -5,4 +5,6 @@ services:
     volumes:
       - ./scripts:/opt/netsurf/scripts
       - ./build:/opt/netsurf/build
+    environment:
+      - TARGET_WORKSPACE=/opt/netsurf/build
     command: /opt/netsurf/scripts/build.sh
