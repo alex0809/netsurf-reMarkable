@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPTPATH=/opt/netsurf/scripts
+SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 TARGET_WORKSPACE=/opt/netsurf/build
 HOST=arm-remarkable-linux-gnueabihf
 
