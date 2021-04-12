@@ -1,3 +1,7 @@
+# Hardcoded versions of all repositories that are cloned during the build process
+# All variables for a repository are called [(REPOSITORY)]_VERSION
+# When a variable [REPOSITORY]_VERSION is present, it will override the git repository URL.
+
 BUILDSYSTEM_VERSION="1fbac2b96208708bb6447a01f793248bc72e9ada"
 LIBCSS_VERSION="0504194e51a35a88ceba06288a6a2d8243b27516"
 LIBDOM_VERSION="603ef81d5f715a16680278affa49f0b95b81c347"

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Build script which sets up environment variables appropriately so cross-compilation
+# works inside the docker container.
+
+# This script should also be runnable on the host system itself, if SYSROOT is configured appropriately,
+# but that has not been tested.
+
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 HOST=arm-remarkable-linux-gnueabihf
 
