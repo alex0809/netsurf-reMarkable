@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: docker-compose up
+        run: make
       - name: Set short SHA
         id: vars
         run: echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
