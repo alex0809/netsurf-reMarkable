@@ -5,6 +5,7 @@ GID ?= $(shell id -g)
 MAKEFILE_PATH ?= $(abspath $(lastword $(MAKEFILE_LIST)))
 MAKEFILE_DIR ?= $(dir $(MAKEFILE_PATH))
 BUILD_DIR ?= build
+export BUILD_DIR
 
 INSTALL_DESTINATION ?= 10.11.99.1
 
