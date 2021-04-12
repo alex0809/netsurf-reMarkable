@@ -7,13 +7,12 @@ fb_face_sans_serif:/opt/share/fonts/ttf-dejavu/DejaVuSans.ttf
 fb_face_sans_serif_bold:/opt/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf
 fb_face_sans_serif_italic:/opt/share/fonts/ttf-dejavu/DejaVuSans-Oblique.ttf
 fb_face_sans_serif_italic_bold:/opt/share/fonts/ttf-dejavu/DejaVuSans-BoldOblique.ttf
-
 fb_face_serif:/opt/share/fonts/ttf-dejavu/DejaVuSansMono.ttf
-fb_face_serif_bold:/opt/share/fonts/ttf-dejavu/DejaVuSerif-BoldItalic.ttf
+fb_face_serif_bold:/opt/share/fonts/ttf-dejavu/DejaVuSerif-Bold.ttf
 fb_face_cursive:/opt/share/fonts/ttf-dejavu/DejaVuSerif-Italic.ttf
-
 fb_face_monospace:/opt/share/fonts/ttf-dejavu/DejaVuSansMono.ttf
 fb_face_monospace_bold:/opt/share/fonts/ttf-dejavu/DejaVuSansMono-Bold.ttf
+fb_face_fantasy:/opt/share/fonts/ttf-dejavu/DejaVuSans-Oblique.ttf
 
 fb_toolbar_size:60
 fb_furniture_size:40
