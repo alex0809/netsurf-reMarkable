@@ -3,16 +3,6 @@
 NetSurf is a lightweight and portable open-source web browser. This project adapts NetSurf for the reMarkable E Ink tablet.
 This repository contains the code for to building and releasing new versions.
 
-## Configuration
-
-To configure netsurf, you can use a "Choices" file.
-See [here](https://ci.netsurf-browser.org/jenkins/job/docs-netsurf/doxygen/md_docs_netsurf-options.html) for configuration options.
-
-The configuration options are stores as key:value pairs.
-
-At minimum, you will have to configure the font files. See [here](example/Choices) for an example configuration
-with some sensible default values and preconfigured fonts that should be available on every reMarkable.
-
 ## Installation
 
 ### opkg package
