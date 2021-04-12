@@ -19,7 +19,9 @@ with some sensible default values and preconfigured fonts that should be availab
 
 On the [releases page](https://github.com/alex0809/netsurf-reMarkable/releases), you can find the latest release.
 The release assets contain a file `netsurf_[version]_rmall.ipk` that allows for easy installation on device, if you have
-`opkg` configured on the device. You can find an installation script in the [Toltec](https://github.com/toltec-dev/toltec) repository.
+`opkg` configured on the device. 
+
+You can find an installation script for `opkg` in the [Toltec](https://github.com/toltec-dev/toltec) repository.
 
 Example commands to download and install the ipk file:
 ```
