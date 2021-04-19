@@ -33,5 +33,8 @@ cd $TARGET_WORKSPACE/netsurf/
 # This works for now.
 export LDFLAGS="$LDFLAGS -levdev -lpthread"
 
-export BUILD_CC="arm-remarkable-linux-gnueabihf-gcc"
-make TARGET=framebuffer NETSURF_FB_FONTLIB=freetype CC=$BUILD_CC
+make TARGET=framebuffer \
+    NETSURF_FB_FONTLIB=freetype \
+    NETSURF_LIBJPEG_STATIC=YES \
+    NETSURF_FREETYPE2_STATIC=YES \
+    CC="arm-remarkable-linux-gnueabihf-gcc"
