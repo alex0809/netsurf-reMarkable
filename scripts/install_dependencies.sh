@@ -4,7 +4,7 @@
 # To be run during the Dockerfile build.
 
 apt-get update -y 
-apt-get install -y bison flex git gperf automake libtool libpng-dev
+apt-get install -y bison flex libexpat-dev libpng-dev git gperf automake libtool
 
 # Build curl 7.75.0 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
@@ -15,11 +15,12 @@ export DEBIAN_FRONTEND=noninteractive \
     && sha256sum -c sha256sums \
     && tar --strip-components=1 -xf curl.tar.gz \
     && rm curl.tar.gz sha256sums \
-    && ./configure --prefix=/opt --host="$CHOST" \
+    && ./configure --prefix=/usr --host="$CHOST" \
     && make \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
-    && rm -rf curl
+    && rm -rf curl \
+    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
 
 # Build FreeType 2.10.4 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
@@ -31,23 +32,25 @@ export DEBIAN_FRONTEND=noninteractive \
     && tar --strip-components=1 -xf freetype.tar.gz \
     && rm freetype.tar.gz sha256sums \
     && bash autogen.sh \
-    && ./configure --without-zlib --without-png --enable-static=yes --enable-shared=yes --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config --prefix=/opt \
+    && ./configure --without-zlib --without-png --enable-static=yes --enable-shared=no --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config \
     && make \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
-    && rm -rf freetype
+    && rm -rf freetype \
+    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
 
 # Build libjpeg-turbo 2.0.90 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
     && mkdir libjpeg-turbo \
     && cd libjpeg-turbo \
-    && curl -L "https://sourceforge.net/projects/libjpeg-turbo/files/2.0.6/libjpeg-turbo-2.0.6.tar.gz" -o libjpeg-turbo.tar.gz \
-    && echo "d74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb  libjpeg-turbo.tar.gz" > sha256sums \
+    && curl "https://codeload.github.com/libjpeg-turbo/libjpeg-turbo/tar.gz/refs/tags/2.0.90" -o libjpeg-turbo.tar.gz \
+    && echo "6a965adb02ad898b2ae48214244618fe342baea79db97157fdc70d8844ac6f09  libjpeg-turbo.tar.gz" > sha256sums \
     && sha256sum -c sha256sums \
     && tar --strip-components=1 -xf libjpeg-turbo.tar.gz \
     && rm libjpeg-turbo.tar.gz sha256sums \
-    && cmake -DCMAKE_SYSROOT="$SYSROOT" -DCMAKE_TOOLCHAIN_FILE=/usr/share/cmake/$CHOST.cmake -DCMAKE_INSTALL_LIBDIR=/opt/lib -DCMAKE_INSTALL_INCLUDEDIR=/opt/include \
+    && cmake -DCMAKE_SYSROOT="$SYSROOT" -DCMAKE_TOOLCHAIN_FILE=/usr/share/cmake/$CHOST.cmake -DCMAKE_INSTALL_LIBDIR=$SYSROOT/lib -DCMAKE_INSTALL_INCLUDEDIR=$SYSROOT/usr/include \
     && make \
-    && DESTDIR="$SYSROOT" make install \
+    && make install \
     && cd .. \
-    && rm -rf libjpeg-turbo
+    && rm -rf libjpeg-turbo \
+    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
