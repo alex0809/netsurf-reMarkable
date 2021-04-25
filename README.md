@@ -47,7 +47,7 @@ The netsurf binary will be copied to `/home/root/netsurf`, and the required reso
 This will prepare the `build/` directory by cloning the latest version of 
 libnsfb and netsurf-base.
 
-The build script (called when running `make`) will only clone missing repositories,
+The build script (called when running `make build`) will only clone missing repositories,
 so any local changes will be picked up with the next build.
 
 ## Related repositories
