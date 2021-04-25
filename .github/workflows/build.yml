@@ -5,8 +5,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Build Docker image
+        run: make build-image
       - name: Build
-        run: make
+        run: make build
       - name: Set short SHA
         id: vars
         run: echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"

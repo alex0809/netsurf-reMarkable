@@ -32,7 +32,7 @@ install: build copy-resources copy-binary ## Build and copy binary and resources
 
 uninstall: remove-resources remove-binary ## Uninstall binary and resources from device
 
-build-container: ## Build the Docker container that is used for building netsurf
+build-image: ## Build the Docker image that is used for building netsurf
 	docker build -t netsurf-build:latest .
 
 copy-resources: ## Copy resources to device
