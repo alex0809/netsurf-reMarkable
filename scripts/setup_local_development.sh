@@ -5,3 +5,4 @@
 
 git clone https://github.com/alex0809/libnsfb-reMarkable.git ${BUILD_DIR}/libnsfb
 git clone https://github.com/alex0809/netsurf-base-reMarkable.git ${BUILD_DIR}/netsurf
+git clone https://github.com/alex0809/libhubbub-reMarkable.git ${BUILD_DIR}/libhubbub
