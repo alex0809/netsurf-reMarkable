@@ -9,6 +9,8 @@ export BUILD_DIR
 
 INSTALL_DESTINATION ?= 10.11.99.1
 
+USE_VOLUME_MOUNT ?= NO
+
 .PHONY: help all clean build install uninstall build-container copy-resources copy-binary local-dev
 
 help:
@@ -19,14 +21,26 @@ all: help ## Print this help
 clean: ## Clean build directory
 	rm -rf $(BUILD_DIR)
 
-build: ## Build netsurf in Docker container
+ifeq ($(USE_VOLUME_MOUNT), NO)
+build: ## Build netsurf in Docker container (bind mount, select with USE_VOLUME_MOUNT=NO)
 	mkdir -p $(BUILD_DIR)
 	docker run --rm \
-		--mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts \
-		--mount type=bind,source=$(MAKEFILE_DIR)/build,target=/opt/netsurf/build \
-		-e TARGET_WORKSPACE=/opt/netsurf/build \
-		--user=$(UID):$(GID) netsurf-build:latest \
-		/opt/netsurf/scripts/build.sh
+	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
+	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR),target=/opt/netsurf/build \
+	    -e TARGET_WORKSPACE=/opt/netsurf/build \
+	    --user=$(UID):$(GID) netsurf-build:latest \
+	    /opt/netsurf/scripts/build.sh
+else
+build: ## Build netsurf in Docker container (volume mount, select with USE_VOLUME_MOUNT=YES)
+	mkdir -p $(BUILD_DIR)
+	docker run --name netsurf-build \
+	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
+	    --mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
+	    -e TARGET_WORKSPACE=/opt/netsurf/build \
+	    netsurf-build:latest \
+	    /opt/netsurf/scripts/build.sh
+	docker cp netsurf-build:/opt/netsurf/build/netsurf/nsfb $(MAKEFILE_DIR)/$(BUILD_DIR)
+endif
 
 install: build copy-resources copy-binary ## Build and copy binary and resources to device
 
