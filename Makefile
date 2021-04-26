@@ -40,6 +40,7 @@ build: ## Build netsurf in Docker container (volume mount, select with USE_VOLUM
 	    netsurf-build:latest \
 	    /opt/netsurf/scripts/build.sh
 	docker cp netsurf-build:/opt/netsurf/build/netsurf/nsfb $(MAKEFILE_DIR)/$(BUILD_DIR)
+	docker rm netsurf-build
 endif
 
 install: build copy-resources copy-binary ## Build and copy binary and resources to device
