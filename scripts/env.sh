@@ -255,7 +255,9 @@ export PATH=${PATH}:${BUILD_PREFIX}/bin
 export NETSURF_GTK_MAJOR
 
 # make tool
-MAKE=make
+if [ -z ${MAKE+x} ]; then
+    MAKE=make
+fi
 
 # NetSurf GIT repositories
 NS_GIT="git://git.netsurf-browser.org"

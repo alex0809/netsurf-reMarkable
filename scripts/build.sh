@@ -11,6 +11,8 @@ HOST=arm-remarkable-linux-gnueabihf
 
 if [ -z "$TARGET_WORKSPACE" ]; then echo "TARGET_WORKSPACE is required, but not set." && exit 1; fi
 
+if [ -z "$MAKE" ]; then export MAKE=make; fi
+
 source $SCRIPTPATH/versions.sh
 source $SCRIPTPATH/env.sh
 
@@ -34,4 +36,4 @@ cd $TARGET_WORKSPACE/netsurf/
 export LDFLAGS="$LDFLAGS -levdev -lpthread"
 
 export BUILD_CC="arm-remarkable-linux-gnueabihf-gcc"
-make TARGET=framebuffer NETSURF_FB_FONTLIB=freetype CC=$BUILD_CC
+$MAKE TARGET=framebuffer NETSURF_FB_FONTLIB=freetype CC=$BUILD_CC
