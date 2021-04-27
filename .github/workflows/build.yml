@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Docker image
-        run: make build-image
+        run: make image
       - name: Build
         run: make build
       - name: Set short SHA
