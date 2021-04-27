@@ -27,7 +27,9 @@ ssh root@remarkable opkg install netsurf_0.x-x_rmall.ipk
 The build itself is done in a Docker container, so apart from Docker and make, there
 should be no additional requirements.
 
-#### Commands
+`make` prints a list of all available commands by default.
+
+#### Build
 
 `make image` to build the Docker image with the toolchain, then `make build` to build netsurf.
 The resulting netsurf binary is `build/netsurf/nsfb`.
@@ -36,9 +38,7 @@ The resulting netsurf binary is `build/netsurf/nsfb`.
 > There is an [open issue](https://github.com/alex0809/netsurf-reMarkable/issues/21) with the build when using a bind-mounted build directory.
 > A workaround will be automatically enabled when running `make build` under MacOS, please see the ticket for details.
 
-### Installation
-
-`make` prints a list of all available commands by default.
+#### Installation
 
 `make install` to build and then install the updated binary to the device.
 This will use `scp` to copy the binary and required files to the device.
