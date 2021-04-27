@@ -12,7 +12,6 @@ INSTALL_DESTINATION ?= 10.11.99.1
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
-	 
     USE_VOLUME_MOUNT ?= YES
 else
 	USE_VOLUME_MOUNT ?= NO
@@ -30,7 +29,7 @@ clean: ## Clean build directory and build volume
 	docker volume rm -f netsurf-build
 
 ifeq ($(USE_VOLUME_MOUNT), NO)
-build: image ## Build netsurf in Docker container (bind mount BUILD_DIR as build directory)
+build: ## Build netsurf in Docker container (bind mount BUILD_DIR as build directory)
 	mkdir -p $(BUILD_DIR)
 	docker run --rm \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
@@ -39,20 +38,21 @@ build: image ## Build netsurf in Docker container (bind mount BUILD_DIR as build
 	    --user=$(UID):$(GID) netsurf-build:latest \
 	    /opt/netsurf/scripts/build.sh
 else
-build: image ## Build netsurf in Docker container (volume mount build directory except BUILD_DIR/netsurf, select with USE_VOLUME_MOUNT=YES)
+build: ## Build netsurf in Docker container (volume mount build directory except BUILD_DIR/netsurf, select with USE_VOLUME_MOUNT=YES)
+	$(info Using volume mount for build directory)
 	mkdir -p $(BUILD_DIR)/netsurf
+	# chown the build directory volume to the current user, so the build can run as current user
 	docker run --rm \
 		--mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
 	    netsurf-build:latest \
 		chown -R $(UID):$(GID) /opt/netsurf/build
-	docker run --name netsurf-build \
+	docker run --rm \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
 	    --mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/netsurf,target=/opt/netsurf/build/netsurf \
 	    -e TARGET_WORKSPACE=/opt/netsurf/build \
 	    --user=$(UID):$(GID) netsurf-build:latest \
 	    /opt/netsurf/scripts/build.sh
-	docker rm netsurf-build
 endif
 
 install: image build copy-resources copy-binary ## Build and copy binary and resources to device
