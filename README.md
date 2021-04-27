@@ -29,10 +29,16 @@ should be no additional requirements.
 
 #### Commands
 
-`make` to build.
+`make image` to build the Docker image with the toolchain, then `make build` to build netsurf.
 The resulting netsurf binary is `build/netsurf/nsfb`.
 
+> MacOS note:
+> There is an [open issue](https://github.com/alex0809/netsurf-reMarkable/issues/21) with the build when using a bind-mounted build directory.
+> A workaround will be automatically enabled when running `make build` under MacOS, please see the ticket for details.
+
 ### Installation
+
+`make` prints a list of all available commands by default.
 
 `make install` to build and then install the updated binary to the device.
 This will use `scp` to copy the binary and required files to the device.
