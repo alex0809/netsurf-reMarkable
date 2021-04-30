@@ -20,7 +20,7 @@ LIBHUBBUB_REPOSITORY="https://github.com/alex0809/libhubbub-reMarkable"
 LIBHUBBUB_VERSION="5287c8f873be87cc8929d4c31185d0389798811c"
 
 LIBNSFB_REPOSITORY="https://github.com/alex0809/libnsfb-reMarkable"
-LIBNSFB_VERSION="4ab38de644682a42169dc0229d432b319df5867d"
+LIBNSFB_VERSION="af3e4739afadd518aaa3098b049cebd9d35e263b"
 
 NETSURF_REPOSITORY="https://github.com/alex0809/netsurf-base-reMarkable"
 NETSURF_VERSION="55dd328dc26232b6cbdef6a51aa8e1c6d263cb97"
