@@ -6,9 +6,9 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 clone() {
-    git clone https://github.com/alex0809/libnsfb-reMarkable.git ${BUILD_DIR}/libnsfb
-    git clone https://github.com/alex0809/netsurf-base-reMarkable.git ${BUILD_DIR}/netsurf
-    git clone https://github.com/alex0809/libhubbub-reMarkable.git ${BUILD_DIR}/libhubbub
+    git clone git@github.com:alex0809/libnsfb-reMarkable.git ${BUILD_DIR}/libnsfb
+    git clone git@github.com:alex0809/netsurf-base-reMarkable.git ${BUILD_DIR}/netsurf
+    git clone git@github.com:alex0809/libhubbub-reMarkable.git ${BUILD_DIR}/libhubbub
 }
 
 if [ -z ${BUILD_DIR} ]; then echo "BUILD_DIR must be set" && exit 1; fi
