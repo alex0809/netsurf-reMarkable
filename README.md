@@ -49,11 +49,16 @@ The netsurf binary will be copied to `/home/root/netsurf`, and the required reso
 
 ## Local development
 
-`make local-dev` to set up the workspace for local development.
-This will prepare the `build/` directory by cloning the latest version of all forked code repositories.
+`make checkout` to set up the workspace for local development.
+This will prepare the `build/` directory by cloning the HEAD of all forked code repositories.
 
 The build script (called when running `make build`) will only clone missing repositories,
 so any local changes will be picked up with the next build.
+
+To use clangd language server, you can run `make clangd-build`, which will prepare a Docker container
+clangd and compile-commands set up.
+After the build is complete, you can can start the container with `make clangd-start`, and access with
+[clangd-docker.sh](scripts/clangd-docker.sh).
 
 ## Related repositories
 
