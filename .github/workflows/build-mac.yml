@@ -5,9 +5,8 @@ jobs:
     runs-on:  macos-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: docker-practice/actions-setup-docker@v1
       - name: Build Docker image
-        uses: docker-practice/actions-setup-docker@v1
         run: make image
       - name: Build
-        uses: docker-practice/actions-setup-docker@v1
         run: make build
