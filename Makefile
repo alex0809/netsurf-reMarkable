@@ -83,17 +83,13 @@ checkout: clean ## [Dev] Clean build directory and check out HEAD of forked repo
 	scripts/setup_local_development.sh head
 
 clangd-build: ## [Dev] Prepare local dev container with clangd and compile-commands.json
-	$(info Removing existing clangd container)
 	docker rm -f netsurf-clangd
-	$(info Building image)
 	docker build -t netsurf-localdev -f Dockerfile.localdev .
-	$(info Recreating local dev Docker volume)
 	docker volume rm -f netsurf-clangd
 	docker run --rm \
 		--mount type=volume,source=netsurf-clangd,target=/opt/netsurf/build \
 	    netsurf-localdev:latest \
 		chown -R $(UID):$(GID) /opt/netsurf/build
-	$(info Building netsurf with bear, to generate compile-commands.json)
 	docker run --rm \
 		--mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts \
 		--mount type=volume,source=netsurf-clangd,target=/opt/netsurf/build \
@@ -101,19 +97,15 @@ clangd-build: ## [Dev] Prepare local dev container with clangd and compile-comma
 		-e MAKE="bear --append -- make" \
 		--user=$(UID):$(GID) netsurf-localdev:latest \
 		sh -c "cd /opt/netsurf/build && /opt/netsurf/scripts/build.sh"
-	$(info Build finished. You can now start a Docker container with clangd set up with make clangd)
 
 clangd-start: ## [Dev] Start the local development docker container with clangd set up
+	$(info To access clangd-container, you can use scripts/clangd_docker.sh.)
 	docker run --detach --name netsurf-clangd \
 		--mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts \
 		--mount type=volume,source=netsurf-clangd,target=/opt/netsurf/build \
-	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/netsurf,target=/opt/netsurf/build/netsurf \
-	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/libnsfb,target=/opt/netsurf/build/libnsfb \
 		-p 50505:50505 \
 		--user=$(UID):$(GID) netsurf-localdev:latest \
 		tail -f /dev/null
-	$(info Clangd container is now running in the background.)
-	$(info To access, you can use scripts/clangd-docker.sh.)
 
 clangd-stop: ## [Dev] Stop the local development docker container
 	docker rm -f netsurf-clangd
