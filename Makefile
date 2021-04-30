@@ -40,7 +40,10 @@ build: ## Build netsurf in Docker container (bind mount BUILD_DIR as build direc
 else
 build: ## Build netsurf in Docker container (volume mount build directory except BUILD_DIR/netsurf, select with USE_VOLUME_MOUNT=YES)
 	$(info Using volume mount for build directory)
-	mkdir -p $(BUILD_DIR)/netsurf
+	mkdir -p $(BUILD_DIR)
+	# Workaround: clone all bind-mounted repositories outside the container, 
+	# because we need the folders to exist before the container starts for mounting them.
+	scripts/setup_local_development.sh versioned
 	# chown the build directory volume to the current user, so the build can run as current user
 	docker run --rm \
 		--mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
@@ -51,7 +54,6 @@ build: ## Build netsurf in Docker container (volume mount build directory except
 	    --mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/netsurf,target=/opt/netsurf/build/netsurf \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/libnsfb,target=/opt/netsurf/build/libnsfb \
-	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/libhubbub,target=/opt/netsurf/build/libhubbub \
 	    -e TARGET_WORKSPACE=/opt/netsurf/build \
 	    --user=$(UID):$(GID) netsurf-build:latest \
 	    /opt/netsurf/scripts/build.sh
@@ -78,7 +80,7 @@ remove-binary: ## Remove binary from device
 	ssh root@$(INSTALL_DESTINATION) rm -f /home/root/netsurf
 
 checkout: clean ## [Dev] Clean build directory and check out HEAD of forked repositories
-	scripts/setup_local_development.sh
+	scripts/setup_local_development.sh head
 
 clangd-build: ## [Dev] Prepare local dev container with clangd and compile-commands.json
 	$(info Removing existing clangd container)
