@@ -4,7 +4,22 @@
 # To be run during the Dockerfile build.
 
 apt-get update -y 
-apt-get install -y bison flex libexpat-dev libpng-dev git gperf automake libtool
+apt-get install -y bison flex libexpat-dev git gperf automake libtool libpng-dev
+
+# Build libpng 1.6.37 targeting armhf
+export DEBIAN_FRONTEND=noninteractive \
+    && mkdir libpng \
+    && cd libpng \
+    && curl -L https://download.sourceforge.net/libpng/libpng-1.6.37.tar.gz -o libpng.tar.gz \
+    && echo "daeb2620d829575513e35fecc83f0d3791a620b9b93d800b763542ece9390fb4 libpng.tar.gz" > sha256sums \
+    && sha256sum -c sha256sums \
+    && tar --strip-components=1 -xf libpng.tar.gz \
+    && rm libpng.tar.gz sha256sums \
+    && ./configure --prefix=/usr --host="$CHOST" \
+    && make \
+    && DESTDIR="$SYSROOT" make install \
+    && cd .. \
+    && rm -rf libpng
 
 # Build curl 7.75.0 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
@@ -19,8 +34,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && make \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
-    && rm -rf curl \
-    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
+    && rm -rf curl
 
 # Build FreeType 2.10.4 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
@@ -36,8 +50,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && make \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
-    && rm -rf freetype \
-    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
+    && rm -rf freetype
 
 # Build libjpeg-turbo 2.0.90 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
@@ -52,5 +65,4 @@ export DEBIAN_FRONTEND=noninteractive \
     && make \
     && make install \
     && cd .. \
-    && rm -rf libjpeg-turbo \
-    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
+    && rm -rf libjpeg-turbo
