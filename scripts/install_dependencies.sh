@@ -32,7 +32,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && tar --strip-components=1 -xf freetype.tar.gz \
     && rm freetype.tar.gz sha256sums \
     && bash autogen.sh \
-    && ./configure --without-zlib --without-png --enable-static=yes --enable-shared=no --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config \
+    && ./configure --without-zlib --without-png --enable-static=no --enable-shared=yes --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config \
     && make \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
