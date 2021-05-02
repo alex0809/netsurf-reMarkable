@@ -9,11 +9,6 @@ jobs:
         run: make image
       - name: Build
         run: make build
-      - name: Set short SHA
-        id: vars
-        run: echo "::set-output name=sha-short::$(git rev-parse --short HEAD)"
-      - name: Check outputs
-        run: echo ${{ steps.vars.outputs.sha_short }}
       - name: Package resources
         if: startsWith(github.ref, 'refs/tags/')
         run: tar -C ./build/netsurf -cvzf nsfb.tar.gz resources/ nsfb
