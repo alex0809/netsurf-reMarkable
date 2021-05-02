@@ -6,6 +6,21 @@
 apt-get update -y 
 apt-get install -y bison flex libexpat-dev libpng-dev git gperf automake libtool
 
+# Build openssl targeting armhf
+export DEBIAN_FRONTEND=noninteractive \
+    && mkdir openssl \
+    && cd openssl \
+    && curl https://www.openssl.org/source/openssl-1.1.1k.tar.gz -o openssl.tar.gz \
+    && echo "892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c327df33fbaee5  openssl.tar.gz" > sha256sums \
+    && sha256sum -c sha256sums \
+    && tar --strip-components=1 -xf openssl.tar.gz \
+    && rm openssl.tar.gz sha256sums \
+    && ./Configure no-shared no-comp --prefix=$SYSROOT/usr --openssldir=$SYSROOT/usr --cross-compile-prefix=$CHOST- linux-armv4 \
+    && make \
+    && DESTDIR="$SYSROOT" make install \
+    && cd .. \
+    && rm -rf openssl || exit 1
+
 # Build curl 7.75.0 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
     && mkdir curl \
@@ -15,12 +30,11 @@ export DEBIAN_FRONTEND=noninteractive \
     && sha256sum -c sha256sums \
     && tar --strip-components=1 -xf curl.tar.gz \
     && rm curl.tar.gz sha256sums \
-    && ./configure --prefix=/usr --host="$CHOST" \
+    && ./configure --prefix=/usr --host="$CHOST" --enable-static --disable-shared --with-openssl --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
     && make \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
-    && rm -rf curl \
-    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
+    && rm -rf curl || exit 1
 
 # Build FreeType 2.10.4 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
@@ -32,12 +46,11 @@ export DEBIAN_FRONTEND=noninteractive \
     && tar --strip-components=1 -xf freetype.tar.gz \
     && rm freetype.tar.gz sha256sums \
     && bash autogen.sh \
-    && ./configure --without-zlib --without-png --enable-static=no --enable-shared=yes --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config \
+    && ./configure --without-zlib --without-png --enable-static=yes --enable-shared=no --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config \
     && make \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
-    && rm -rf freetype \
-    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
+    && rm -rf freetype || exit 1
 
 # Build libjpeg-turbo 2.0.90 targeting armhf
 export DEBIAN_FRONTEND=noninteractive \
@@ -48,9 +61,8 @@ export DEBIAN_FRONTEND=noninteractive \
     && sha256sum -c sha256sums \
     && tar --strip-components=1 -xf libjpeg-turbo.tar.gz \
     && rm libjpeg-turbo.tar.gz sha256sums \
-    && cmake -DCMAKE_SYSROOT="$SYSROOT" -DCMAKE_TOOLCHAIN_FILE=/usr/share/cmake/$CHOST.cmake -DCMAKE_INSTALL_LIBDIR=$SYSROOT/lib -DCMAKE_INSTALL_INCLUDEDIR=$SYSROOT/usr/include \
+    && cmake -DCMAKE_SYSROOT="$SYSROOT" -DCMAKE_TOOLCHAIN_FILE=/usr/share/cmake/$CHOST.cmake -DCMAKE_INSTALL_LIBDIR=$SYSROOT/lib -DCMAKE_INSTALL_INCLUDEDIR=$SYSROOT/usr/include -DENABLE_SHARED=FALSE \
     && make \
     && make install \
     && cd .. \
-    && rm -rf libjpeg-turbo \
-    && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
+    && rm -rf libjpeg-turbo || exit 1
