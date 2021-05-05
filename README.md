@@ -43,7 +43,15 @@ The resulting netsurf binary is `build/netsurf/nsfb`.
 `make install` to build and then install the updated binary to the device.
 This will use `scp` to copy the binary and required files to the device.
 Device address used is by default `10.11.99.1` (i.e. reMarkable connected to your PC via USB), but can be overridden with the `INSTALL_DESTINATION` variable.
-The netsurf binary will be copied to `/home/root/netsurf`, and the required resources are copied to `/home/root/.netsurf`.
+The netsurf binary will be copied to `~/netsurf`, and the required resources are copied to `~/.netsurf`.
+
+The font files defined in the configuration file `~/.netsurf/Choices` must exist.
+You can either install the pre-configured fonts via opkg, or copy your own preferred fonts to the device and adapt the `Choices` file.
+
+Installation of pre-configured fonts:
+```
+opkg install dejavu-fonts-ttf-DejaVuSans dejavu-fonts-ttf-DejaVuSans-Bold dejavu-fonts-ttf-DejaVuSans-BoldOblique dejavu-fonts-ttf-DejaVuSans-Oblique dejavu-fonts-ttf-DejaVuSerif dejavu-fonts-ttf-DejaVuSerif-Bold dejavu-fonts-ttf-DejaVuSerif-Italic dejavu-fonts-ttf-DejaVuSansMono dejavu-fonts-ttf-DejaVuSansMono-Bold
+```
 
 `make uninstall` to remove the binary and other installed files from the device.
 
