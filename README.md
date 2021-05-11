@@ -70,6 +70,5 @@ After the build is complete, you can can start the container with `make clangd-s
 
 ## Related repositories
 
-- [libhubbub-reMarkable](https://github.com/alex0809/libhubbub-reMarkable): fork of libhubbub which changes default encoding from Windows-1252 to UTF-8
 - [libnsfb-reMarkable](https://github.com/alex0809/libnsfb-reMarkable): fork of libnsfb with reMarkable-specific code for drawing to the screen and input handling
 - [netsurf-base-reMarkable](https://github.com/alex0809/netsurf-base-reMarkable): fork of netsurf, with modifications to make it work better on the reMarkable
