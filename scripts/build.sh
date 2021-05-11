@@ -37,4 +37,4 @@ export LDFLAGS="$LDFLAGS -levdev -lpthread"
 
 export CC="arm-remarkable-linux-gnueabihf-gcc"
 export STRIP="arm-remarkable-linux-gnueabihf-strip"
-$MAKE TARGET=framebuffer NETSURF_FB_FONTLIB=freetype NETSURF_STRIP_BINARY=YES
+$MAKE TARGET=framebuffer NETSURF_FB_FONTLIB=freetype NETSURF_STRIP_BINARY=YES NETSURF_USE_LIBICONV_PLUG=NO

@@ -3,7 +3,9 @@
 # This script installs and cross-compiles the dependencies required for netsurf build.
 # To be run during the Dockerfile build.
 
-# Build openssl targeting armhf
+# Build libiconv 1.16
+
+# Build openssl 1.1.1k
 export DEBIAN_FRONTEND=noninteractive \
     && mkdir openssl \
     && cd openssl \
@@ -18,7 +20,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && cd .. \
     && rm -rf openssl || exit 1
 
-# Build curl 7.75.0 targeting armhf
+# Build curl 7.75.0
 export DEBIAN_FRONTEND=noninteractive \
     && mkdir curl \
     && cd curl \
@@ -33,7 +35,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && cd .. \
     && rm -rf curl || exit 1
 
-# Build FreeType 2.10.4 targeting armhf
+# Build FreeType 2.10.4
 export DEBIAN_FRONTEND=noninteractive \
     && mkdir freetype \
     && cd freetype \
@@ -49,7 +51,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && cd .. \
     && rm -rf freetype || exit 1
 
-# Build libjpeg-turbo 2.0.90 targeting armhf
+# Build libjpeg-turbo 2.0.90
 export DEBIAN_FRONTEND=noninteractive \
     && mkdir libjpeg-turbo \
     && cd libjpeg-turbo \
