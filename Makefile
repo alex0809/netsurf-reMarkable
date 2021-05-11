@@ -8,7 +8,7 @@ BUILD_DIR ?= build
 export BUILD_DIR
 
 INSTALL_DESTINATION ?= 10.11.99.1
-
+IMAGE_TAG ?= latest
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
@@ -35,7 +35,7 @@ build: ## Build netsurf in Docker container (bind mount BUILD_DIR as build direc
 	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR),target=/opt/netsurf/build \
 	    -e TARGET_WORKSPACE=/opt/netsurf/build \
-	    --user=$(UID):$(GID) netsurf-build:latest \
+	    --user=$(UID):$(GID) netsurf-build:$(IMAGE_TAG) \
 	    /opt/netsurf/scripts/build.sh
 else
 build: ## Build netsurf in Docker container (volume mount build directory except BUILD_DIR/netsurf, select with USE_VOLUME_MOUNT=YES)
@@ -47,7 +47,7 @@ build: ## Build netsurf in Docker container (volume mount build directory except
 	# chown the build directory volume to the current user, so the build can run as current user
 	docker run --rm \
 		--mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
-	    netsurf-build:latest \
+	    netsurf-build:$(IMAGE_TAG) \
 		chown -R $(UID):$(GID) /opt/netsurf/build
 	docker run --rm \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
@@ -55,7 +55,7 @@ build: ## Build netsurf in Docker container (volume mount build directory except
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/netsurf,target=/opt/netsurf/build/netsurf \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/libnsfb,target=/opt/netsurf/build/libnsfb \
 	    -e TARGET_WORKSPACE=/opt/netsurf/build \
-	    --user=$(UID):$(GID) netsurf-build:latest \
+	    --user=$(UID):$(GID) netsurf-build:$(IMAGE_TAG) \
 	    /opt/netsurf/scripts/build.sh
 endif
 
@@ -64,7 +64,7 @@ install: image build copy-resources copy-binary ## Build and copy binary and res
 uninstall: remove-resources remove-binary ## Uninstall binary and resources from device
 
 image: ## Build the Docker image that is used for building netsurf
-	docker build -t netsurf-build:latest .
+	docker build -t netsurf-build:$(IMAGE_TAG) .
 
 copy-resources: ## Copy resources to device
 	scp -r $(BUILD_DIR)/netsurf/frontends/framebuffer/res root@$(INSTALL_DESTINATION):/home/root/.netsurf/
