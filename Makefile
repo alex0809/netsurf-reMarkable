@@ -6,9 +6,9 @@ MAKEFILE_PATH ?= $(abspath $(lastword $(MAKEFILE_LIST)))
 MAKEFILE_DIR ?= $(dir $(MAKEFILE_PATH))
 BUILD_DIR ?= build
 export BUILD_DIR
-
 INSTALL_DESTINATION ?= 10.11.99.1
 IMAGE_TAG ?= latest
+CLANGD_CONTAINER ?= netsurf-clangd
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
@@ -24,9 +24,10 @@ help:
 
 all: help ## Print this help
 
-clean: ## Clean build directory and build volume
+clean: ## Clean build directory, build volume and clangd container
 	rm -rf $(BUILD_DIR)
 	docker volume rm -f netsurf-build
+	docker rm -f $(CLANGD_CONTAINER)
 
 ifeq ($(USE_VOLUME_MOUNT), NO)
 build: ## Build netsurf in Docker container (bind mount BUILD_DIR as build directory)
@@ -40,11 +41,11 @@ build: ## Build netsurf in Docker container (bind mount BUILD_DIR as build direc
 else
 build: ## Build netsurf in Docker container (volume mount build directory except BUILD_DIR/netsurf, select with USE_VOLUME_MOUNT=YES)
 	$(info Using volume mount for build directory)
-	# Workaround: clone all bind-mounted repositories outside the container, 
-	# because we need the folders to exist before the container starts for mounting them.
-	# Only call setup if BUILD_DIR does not exist yet.
+# Workaround: clone all bind-mounted repositories outside the container, 
+# because we need the folders to exist before the container starts for mounting them.
+# Only call setup if BUILD_DIR does not exist yet.
 	if [ ! -d $(BUILD_DIR) ]; then mkdir -p $(BUILD_DIR) && scripts/setup_local_development.sh versioned; fi
-	# chown the build directory volume to the current user, so the build can run as current user
+# chown the build directory volume to the current user, so the build can run as current user
 	docker run --rm \
 		--mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
 	    netsurf-build:$(IMAGE_TAG) \
@@ -82,17 +83,17 @@ remove-binary: ## Remove binary from device
 checkout: clean ## [Dev] Clean build directory and check out HEAD of forked repositories
 	scripts/setup_local_development.sh head
 
-clangd-build: ## [Dev] Prepare local dev container with clangd and compile-commands.json
-	docker rm -f netsurf-clangd
+clangd-build: ## [Dev] Prepare local dev container with clangd and compile-commands.json (Note: run checkout first to use HEAD)
+	mkdir -p $(BUILD_DIR)
+	docker rm -f $(CLANGD_CONTAINER)
 	docker build -t netsurf-localdev -f Dockerfile.localdev .
-	docker volume rm -f netsurf-clangd
 	docker run --rm \
-		--mount type=volume,source=netsurf-clangd,target=/opt/netsurf/build \
+		--mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR),target=/opt/netsurf/build \
 	    netsurf-localdev:latest \
 		chown -R $(UID):$(GID) /opt/netsurf/build
 	docker run --rm \
 		--mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts \
-		--mount type=volume,source=netsurf-clangd,target=/opt/netsurf/build \
+		--mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR),target=/opt/netsurf/build \
 		-e TARGET_WORKSPACE=/opt/netsurf/build \
 		-e MAKE="bear --append -- make" \
 		--user=$(UID):$(GID) netsurf-localdev:latest \
@@ -102,10 +103,15 @@ clangd-start: ## [Dev] Start the local development docker container with clangd 
 	$(info To access clangd-container, you can use scripts/clangd_docker.sh.)
 	docker run --detach --name netsurf-clangd \
 		--mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts \
-		--mount type=volume,source=netsurf-clangd,target=/opt/netsurf/build \
+		--mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR),target=/opt/netsurf/build \
 		-p 50505:50505 \
 		--user=$(UID):$(GID) netsurf-localdev:latest \
 		tail -f /dev/null
+# Requires sudo to be able to copy the x-tools directory recursively to host
+	sudo docker cp -a netsurf-clangd:/opt/x-tools \
+		$(MAKEFILE_DIR)/$(BUILD_DIR)
+# Change ownership to curent user, so we don't need sudo for later deletion
+	sudo chown -R $(UID):$(GID) $(BUILD_DIR)/x-tools
 
 clangd-stop: ## [Dev] Stop the local development docker container
 	docker rm -f netsurf-clangd
