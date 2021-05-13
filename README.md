@@ -66,7 +66,7 @@ so any local changes will be picked up with the next build.
 To use clangd language server, you can run `make clangd-build`, which will prepare a Docker container
 clangd and compile-commands set up.
 After the build is complete, you can can start the container with `make clangd-start`, and access with
-[clangd-docker.sh](scripts/clangd-docker.sh).
+[clangd_docker.sh](scripts/clangd_docker.sh).
 
 ## Related repositories
 
