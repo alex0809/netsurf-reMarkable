@@ -112,7 +112,7 @@ clangd-start: ## [Dev] Start the local development docker container with clangd 
 		$(MAKEFILE_DIR)/$(BUILD_DIR)
 # Change ownership to curent user and add write permission, so we don't need sudo for later deletion
 	sudo chown -R $(UID):$(GID) $(BUILD_DIR)/x-tools
-	chmod +w $(BUILD_DIR)/x-tools
+	chmod -R +w $(BUILD_DIR)/x-tools
 
 clangd-stop: ## [Dev] Stop the local development docker container
 	docker rm -f netsurf-clangd
