@@ -21,4 +21,4 @@ LIBNSFB_REPOSITORY="https://github.com/alex0809/libnsfb-reMarkable"
 LIBNSFB_VERSION="af3e4739afadd518aaa3098b049cebd9d35e263b"
 
 NETSURF_REPOSITORY="https://github.com/alex0809/netsurf-base-reMarkable"
-NETSURF_VERSION="623ab285e8e86968ac0c7456082acde760b180db"
+NETSURF_VERSION="6ebe54a0d8b68f1fbac63c50e4ec3f0534989d4f"
