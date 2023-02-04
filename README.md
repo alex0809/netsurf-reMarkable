@@ -20,6 +20,12 @@ scp netsurf_0.x-x_rmall.ipk root@10.11.99.1:
 ssh root@remarkable opkg install netsurf_0.x-x_rmall.ipk
 ```
 
+## Usage
+
+The 'a' in the bottom-right corner screen toggles the keyboard.
+
+More usage information may be found on the [official NetSurf website](https://www.netsurf-browser.org/documentation/#User).
+
 ### Local build and installation
 
 #### Requirements
