@@ -1,24 +1,32 @@
-# NetSurf-reMarkable [![Build for reMarkable](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml/badge.svg)](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml)
+# NetSurf-reMarkable [![Build for reMarkable](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml/badge.svg)](https://github.com/alex0809/netsurf-reMarkable/actions/workflows/build.yml)[![rm1](https://img.shields.io/badge/rM1-supported-green)](https://remarkable.com/store/remarkable)[![rm2](https://img.shields.io/badge/rM2-supported-green)](https://remarkable.com/store/remarkable-2)[![opkg](https://img.shields.io/badge/OPKG-netsurf-blue)](https://toltec-dev.org/)
 
 NetSurf is a lightweight and portable open-source web browser. This project adapts NetSurf for the reMarkable E Ink tablet.
 This repository contains the code for to building and releasing new versions.
 
 ## Installation
 
-### opkg package
+### Toltec
+
+You can install neturf with [Toltec](https://toltec-dev.org) using the following command:
+
+```
+opkg install netsurf
+```
+
+### Github Release
 
 On the [releases page](https://github.com/alex0809/netsurf-reMarkable/releases), you can find the latest release.
-The release assets contain a file `netsurf_[version]_rmall.ipk` that allows for easy installation on device, if you have
-`opkg` configured on the device. 
-
-You can find an installation script for `opkg` in the [Toltec](https://github.com/toltec-dev/toltec) repository.
+The release assets contain a file `netsurf_[version]_rmall.ipk` that allows for easy installation on device.
 
 Example commands to download and install the ipk file:
 ```
-wget https://github.com/alex0809/netsurf-reMarkable/releases/download/vx.x/netsurf_0.x-x_rmall.ipk
-scp netsurf_0.x-x_rmall.ipk root@10.11.99.1:
-ssh root@remarkable opkg install netsurf_0.x-x_rmall.ipk
+version=0.4
+wget https://github.com/alex0809/netsurf-reMarkable/releases/download/v$version/netsurf_$version-1_rmall.ipk
+scp netsurf_$version-1_rmall.ipk root@10.11.99.1:
+ssh root@remarkable opkg install netsurf_$version-1_rmall.ipk
 ```
+
+To install a different release change the `version=` line to the version number for the release you wish to install.
 
 ## Usage
 
