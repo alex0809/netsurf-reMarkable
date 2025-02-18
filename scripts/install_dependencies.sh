@@ -13,7 +13,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && tar --strip-components=1 -xf libiconv.tar.gz \
     && rm libiconv.tar.gz sha256sums \
     && ./configure --prefix=$SYSROOT/usr --host="$CHOST" --enable-static --disable-shared \
-    && make \
+    && make -j $(nproc) \
     && make install \
     && cd .. \
     && rm -rf libiconv || exit 1
@@ -28,7 +28,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && tar --strip-components=1 -xf openssl.tar.gz \
     && rm openssl.tar.gz sha256sums \
     && ./Configure no-shared no-comp --prefix=$SYSROOT/usr --openssldir=$SYSROOT/usr --cross-compile-prefix=$CHOST- linux-armv4 \
-    && make \
+    && make -j $(nproc) \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
     && rm -rf openssl || exit 1
@@ -43,7 +43,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && tar --strip-components=1 -xf curl.tar.gz \
     && rm curl.tar.gz sha256sums \
     && ./configure --prefix=/usr --host="$CHOST" --enable-static --disable-shared --with-openssl --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
-    && make \
+    && make -j $(nproc) \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
     && rm -rf curl || exit 1
@@ -59,7 +59,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && rm freetype.tar.gz sha256sums \
     && bash autogen.sh \
     && ./configure --without-zlib --without-png --enable-static=yes --enable-shared=no --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config \
-    && make \
+    && make -j $(nproc) \
     && DESTDIR="$SYSROOT" make install \
     && cd .. \
     && rm -rf freetype || exit 1
@@ -74,7 +74,7 @@ export DEBIAN_FRONTEND=noninteractive \
     && tar --strip-components=1 -xf libjpeg-turbo.tar.gz \
     && rm libjpeg-turbo.tar.gz sha256sums \
     && cmake -DCMAKE_SYSROOT="$SYSROOT" -DCMAKE_TOOLCHAIN_FILE=/usr/share/cmake/$CHOST.cmake -DCMAKE_INSTALL_LIBDIR=$SYSROOT/lib -DCMAKE_INSTALL_INCLUDEDIR=$SYSROOT/usr/include -DENABLE_SHARED=FALSE \
-    && make \
+    && make -j $(nproc) \
     && make install \
     && cd .. \
     && rm -rf libjpeg-turbo || exit 1
