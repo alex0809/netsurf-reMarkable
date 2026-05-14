@@ -68,6 +68,7 @@ image: ## Build the Docker image that is used for building netsurf
 	docker build -t netsurf-build:$(IMAGE_TAG) .
 
 copy-resources: ## Copy resources to device
+	ssh root@$(INSTALL_DESTINATION) mkdir -p /home/root/.netsurf
 	scp -r $(BUILD_DIR)/netsurf/frontends/framebuffer/res root@$(INSTALL_DESTINATION):/home/root/.netsurf/
 	scp example/Choices root@$(INSTALL_DESTINATION):/home/root/.netsurf/
 
