@@ -91,6 +91,12 @@ verify_and_extract() {
         "https://github.com/curl/curl/releases/download/curl-8_20_0/curl-8.20.0.tar.gz"
     verify_and_extract curl.tar.gz \
         "0d8798d854a32d86ec260fdfabbcf983521a56589d8e5963543a88119e57d231c4a5f3e64737cff61845d837684c73ef58eff92f9c921ef03d87c1d37531e6bf"
+    # Drop the toltec base image's prebuilt libcurl shared lib so the final
+    # nsfb link picks our libcurl.a (which is linked against OpenSSL 3) and
+    # not the old libcurl.so (linked against OpenSSL 1.1, whose symbols are
+    # no longer in the sysroot).
+    rm -f "$SYSROOT/usr/lib/libcurl."* \
+          "$SYSROOT/usr/lib/pkgconfig/libcurl.pc"
     ./configure --prefix=/usr --host="$CHOST" \
         --enable-static --disable-shared \
         --with-openssl --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
