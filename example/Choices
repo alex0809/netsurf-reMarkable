@@ -1,6 +1,6 @@
 homepage_url:about:welcome
 fb_download_directory:/home/root/Downloads
-fb_xochitl_restart_command:systemctl restart remux
+fb_xochitl_restart_command:systemctl restart xochitl
 
 scale:150
 
@@ -18,16 +18,20 @@ send_referer:0
 max_cached_fetch_handles:8
 memory_cache_size:33554432
 
-fb_face_sans_serif:/opt/share/fonts/ttf-dejavu/DejaVuSans.ttf
-fb_face_sans_serif_bold:/opt/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf
-fb_face_sans_serif_italic:/opt/share/fonts/ttf-dejavu/DejaVuSans-Oblique.ttf
-fb_face_sans_serif_italic_bold:/opt/share/fonts/ttf-dejavu/DejaVuSans-BoldOblique.ttf
-fb_face_serif:/opt/share/fonts/ttf-dejavu/DejaVuSerif.ttf
-fb_face_serif_bold:/opt/share/fonts/ttf-dejavu/DejaVuSerif-Bold.ttf
-fb_face_cursive:/opt/share/fonts/ttf-dejavu/DejaVuSerif-Italic.ttf
-fb_face_monospace:/opt/share/fonts/ttf-dejavu/DejaVuSansMono.ttf
-fb_face_monospace_bold:/opt/share/fonts/ttf-dejavu/DejaVuSansMono-Bold.ttf
-fb_face_fantasy:/opt/share/fonts/ttf-dejavu/DejaVuSans-Oblique.ttf
+# Font paths for reMarkable Paper Pro (Ferrari): the device ships with
+# the Noto family in /usr/share/fonts/ttf/noto/. For rM1/rM2 the upstream
+# config pointed at DejaVu installed via Toltec under /opt/share/fonts.
+# NotoMono has no bold flavour shipped, so monospace_bold reuses Regular.
+fb_face_sans_serif:/usr/share/fonts/ttf/noto/NotoSans-Regular.ttf
+fb_face_sans_serif_bold:/usr/share/fonts/ttf/noto/NotoSans-Bold.ttf
+fb_face_sans_serif_italic:/usr/share/fonts/ttf/noto/NotoSans-Italic.ttf
+fb_face_sans_serif_italic_bold:/usr/share/fonts/ttf/noto/NotoSans-BoldItalic.ttf
+fb_face_serif:/usr/share/fonts/ttf/noto/NotoSerif-Regular.ttf
+fb_face_serif_bold:/usr/share/fonts/ttf/noto/NotoSerif-Bold.ttf
+fb_face_cursive:/usr/share/fonts/ttf/noto/NotoSerif-Italic.ttf
+fb_face_monospace:/usr/share/fonts/ttf/noto/NotoMono-Regular.ttf
+fb_face_monospace_bold:/usr/share/fonts/ttf/noto/NotoMono-Regular.ttf
+fb_face_fantasy:/usr/share/fonts/ttf/noto/NotoSans-Italic.ttf
 
 fb_toolbar_size:60
 fb_furniture_size:40
