@@ -30,7 +30,7 @@ source $SCRIPTPATH/env.sh
 NS_OPT_CFLAGS="-O2 -pipe -fomit-frame-pointer -ffunction-sections -fdata-sections"
 NS_HARDEN_CFLAGS="-fstack-protector-strong -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fno-plt"
 NS_TUNE_CFLAGS="-march=armv7-a -mfpu=neon -mfloat-abi=hard -mtune=cortex-a53"
-NS_LDFLAGS_HARDEN="-Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,--gc-sections -Wl,--as-needed"
+NS_LDFLAGS_HARDEN="-Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,--gc-sections"
 
 # Required so the netsurf make picks up the previously built libraries
 export CFLAGS="${CFLAGS:-} ${NS_OPT_CFLAGS} ${NS_HARDEN_CFLAGS} ${NS_TUNE_CFLAGS} -I$TARGET_WORKSPACE/inst-$HOST/include"
