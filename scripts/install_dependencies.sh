@@ -113,13 +113,16 @@ verify_and_extract() {
     verify_and_extract freetype.tar.gz \
         "fccfaa15eb79a105981bf634df34ac9ddf1c53550ec0b334903a1b21f9f8bf5eb2b3f9476e554afa112a0fca58ec85ab212d674dfd853670efec876bacbe8a53"
     # The GitHub source archive doesn't carry the dlg submodule. Freetype's
-    # toplevel make will try to run `git submodule update --init`, which
-    # fails on a non-git tarball checkout. Since dlg is only compiled when
-    # FT_DEBUG_LOGGING is defined (we never define it), an empty stub is
-    # enough to satisfy the wildcard check.
-    mkdir -p subprojects/dlg
-    : > subprojects/dlg/dlg.c
-    : > subprojects/dlg/dlg.h
+    # toplevel make has two rules that touch it: check_out_submodule (runs
+    # `git submodule update --init`) and copy_submodule (cp's specific
+    # header/source files into src/dlg and include/dlg). Both fail on a
+    # tarball checkout. dlg is only compiled when FT_DEBUG_LOGGING is in
+    # CFLAGS, which we never set, so empty stubs at the expected paths
+    # let both rules succeed without affecting the produced libfreetype.a.
+    mkdir -p subprojects/dlg/include/dlg subprojects/dlg/src/dlg
+    : > subprojects/dlg/include/dlg/dlg.h
+    : > subprojects/dlg/include/dlg/output.h
+    : > subprojects/dlg/src/dlg/dlg.c
     bash autogen.sh
     ./configure --host="$CHOST" \
         --enable-static=yes --enable-shared=no \
