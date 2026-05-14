@@ -68,7 +68,15 @@ verify_and_extract() {
         --cross-compile-prefix=$CHOST- \
         linux-armv4
     make
-    DESTDIR="$SYSROOT" make install_sw
+    # Toltec base v3.1 ships an older libssl 1.x in the cross sysroot.
+    # Wipe it before installing so our 3.0.20 headers/libs/pkgconfig
+    # land cleanly and curl 8.x doesn't pick up a stale opensslv.h.
+    rm -rf "$SYSROOT/usr/include/openssl"
+    rm -f "$SYSROOT/usr/lib/libssl."* "$SYSROOT/usr/lib/libcrypto."*
+    rm -f "$SYSROOT/usr/lib/pkgconfig/openssl.pc" \
+          "$SYSROOT/usr/lib/pkgconfig/libssl.pc" \
+          "$SYSROOT/usr/lib/pkgconfig/libcrypto.pc"
+    DESTDIR="$SYSROOT" make install
     cd .. && rm -rf openssl
 )
 
