@@ -112,6 +112,14 @@ verify_and_extract() {
         "https://codeload.github.com/freetype/freetype/tar.gz/refs/tags/VER-2-13-3"
     verify_and_extract freetype.tar.gz \
         "fccfaa15eb79a105981bf634df34ac9ddf1c53550ec0b334903a1b21f9f8bf5eb2b3f9476e554afa112a0fca58ec85ab212d674dfd853670efec876bacbe8a53"
+    # The GitHub source archive doesn't carry the dlg submodule. Freetype's
+    # toplevel make will try to run `git submodule update --init`, which
+    # fails on a non-git tarball checkout. Since dlg is only compiled when
+    # FT_DEBUG_LOGGING is defined (we never define it), an empty stub is
+    # enough to satisfy the wildcard check.
+    mkdir -p subprojects/dlg
+    : > subprojects/dlg/dlg.c
+    : > subprojects/dlg/dlg.h
     bash autogen.sh
     ./configure --host="$CHOST" \
         --enable-static=yes --enable-shared=no \
