@@ -10,7 +10,10 @@
 #   are also used while building the third-party deps so the gains are not
 #   undone at link time.
 
-set -e -o pipefail
+# Note: deliberately NOT using `set -e`. env.sh below uses patterns like
+#   var=$(which cc); if [ $? -eq 0 ]; then ...
+# which assume the previous command's failure is allowed. set -e would abort
+# the whole script on those failures (silently if &>/dev/null is involved).
 
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 HOST=arm-remarkable-linux-gnueabihf
