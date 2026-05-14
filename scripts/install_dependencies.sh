@@ -63,7 +63,7 @@ verify_and_extract() {
         "https://github.com/openssl/openssl/releases/download/openssl-3.0.20/openssl-3.0.20.tar.gz"
     verify_and_extract openssl.tar.gz \
         "3583a44bf9dec4deeade371d6861ce799821a85b32a4d9a8fcae253d78df8f93025ed73fb8efcaf23cc305b11d5aec439852444b3207d211f55660d1f89f5c9c"
-    ./Configure no-shared no-comp no-tests no-docs \
+    ./Configure no-shared no-comp no-tests \
         --prefix=$SYSROOT/usr --openssldir=$SYSROOT/usr \
         --cross-compile-prefix=$CHOST- \
         linux-armv4
