@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        -o Dpkg::Options::="--force-overwrite" \
         automake \
         bison \
         ca-certificates \
