@@ -1,80 +1,132 @@
 #!/bin/sh
 
-# This script installs and cross-compiles the dependencies required for netsurf build.
-# To be run during the Dockerfile build.
+# Cross-compile the third-party dependencies required for netsurf.
+#
+# Notes:
+#  * sha512sum is used for download verification (stronger than sha256).
+#  * Downloads are forced over HTTPS with TLSv1.2 or higher.
+#  * Build flags add stack-protector / FORTIFY_SOURCE hardening and
+#    a Cortex-A53-friendly tune (works on rMPP, gracefully ignored on
+#    older ARMv7 toolchains that don't recognise armv8-a in AArch32 mode).
 
-# Build libiconv 1.16
-export DEBIAN_FRONTEND=noninteractive \
-    && mkdir libiconv \
-    && cd libiconv \
-    && curl "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz" -o libiconv.tar.gz \
-    && echo "e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04  libiconv.tar.gz" > sha256sums \
-    && sha256sum -c sha256sums \
-    && tar --strip-components=1 -xf libiconv.tar.gz \
-    && rm libiconv.tar.gz sha256sums \
-    && ./configure --prefix=$SYSROOT/usr --host="$CHOST" --enable-static --disable-shared \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf libiconv || exit 1
+set -eu
 
-# Build openssl 1.1.1k
-export DEBIAN_FRONTEND=noninteractive \
-    && mkdir openssl \
-    && cd openssl \
-    && curl https://www.openssl.org/source/openssl-1.1.1k.tar.gz -o openssl.tar.gz \
-    && echo "892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c327df33fbaee5  openssl.tar.gz" > sha256sums \
-    && sha256sum -c sha256sums \
-    && tar --strip-components=1 -xf openssl.tar.gz \
-    && rm openssl.tar.gz sha256sums \
-    && ./Configure no-shared no-comp --prefix=$SYSROOT/usr --openssldir=$SYSROOT/usr --cross-compile-prefix=$CHOST- linux-armv4 \
-    && make \
-    && DESTDIR="$SYSROOT" make install \
-    && cd .. \
-    && rm -rf openssl || exit 1
+export DEBIAN_FRONTEND=noninteractive
 
-# Build curl 7.75.0
-export DEBIAN_FRONTEND=noninteractive \
-    && mkdir curl \
-    && cd curl \
-    && curl https://curl.se/download/curl-7.75.0.tar.gz -o curl.tar.gz \
-    && echo "4d51346fe621624c3e4b9f86a8fd6f122a143820e17889f59c18f245d2d8e7a6  curl.tar.gz" > sha256sums \
-    && sha256sum -c sha256sums \
-    && tar --strip-components=1 -xf curl.tar.gz \
-    && rm curl.tar.gz sha256sums \
-    && ./configure --prefix=/usr --host="$CHOST" --enable-static --disable-shared --with-openssl --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
-    && make \
-    && DESTDIR="$SYSROOT" make install \
-    && cd .. \
-    && rm -rf curl || exit 1
+# Curl flags reused for every download to enforce HTTPS-only + retries.
+CURL_OPTS="--proto =https --tlsv1.2 --fail --silent --show-error --location \
+    --retry 3 --retry-delay 5 --connect-timeout 20"
 
-# Build FreeType 2.10.4
-export DEBIAN_FRONTEND=noninteractive \
-    && mkdir freetype \
-    && cd freetype \
-    && curl "https://gitlab.freedesktop.org/freetype/freetype/-/archive/VER-2-10-4/freetype-VER-2-10-4.tar.gz" -o freetype.tar.gz \
-    && echo "4d47fca95debf8eebde5d27e93181f05b4758701ab5ce3e7b3c54b937e8f0962  freetype.tar.gz" > sha256sums \
-    && sha256sum -c sha256sums \
-    && tar --strip-components=1 -xf freetype.tar.gz \
-    && rm freetype.tar.gz sha256sums \
-    && bash autogen.sh \
-    && ./configure --without-zlib --without-png --enable-static=yes --enable-shared=no --without-bzip2 --host=arm-linux-gnueabihf --host="$CHOST" --disable-freetype-config \
-    && make \
-    && DESTDIR="$SYSROOT" make install \
-    && cd .. \
-    && rm -rf freetype || exit 1
+# Hardening + Cortex-A53 tuning. Toolchain GCC may not all understand every
+# flag; the script keeps going if a flag is silently ignored, but a hard
+# failure aborts the build (set -e).
+HARDEN_CFLAGS="-fstack-protector-strong -D_FORTIFY_SOURCE=2 \
+    -fno-plt -ffunction-sections -fdata-sections"
+OPT_CFLAGS="-O2 -pipe -fomit-frame-pointer"
+TUNE_CFLAGS="-march=armv7-a -mfpu=neon -mfloat-abi=hard -mtune=cortex-a53"
+HARDEN_LDFLAGS="-Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,--gc-sections \
+    -Wl,--as-needed"
 
-# Build libjpeg-turbo 2.0.90
-export DEBIAN_FRONTEND=noninteractive \
-    && mkdir libjpeg-turbo \
-    && cd libjpeg-turbo \
-    && curl "https://codeload.github.com/libjpeg-turbo/libjpeg-turbo/tar.gz/refs/tags/2.0.90" -o libjpeg-turbo.tar.gz \
-    && echo "6a965adb02ad898b2ae48214244618fe342baea79db97157fdc70d8844ac6f09  libjpeg-turbo.tar.gz" > sha256sums \
-    && sha256sum -c sha256sums \
-    && tar --strip-components=1 -xf libjpeg-turbo.tar.gz \
-    && rm libjpeg-turbo.tar.gz sha256sums \
-    && cmake -DCMAKE_SYSROOT="$SYSROOT" -DCMAKE_TOOLCHAIN_FILE=/usr/share/cmake/$CHOST.cmake -DCMAKE_INSTALL_LIBDIR=$SYSROOT/lib -DCMAKE_INSTALL_INCLUDEDIR=$SYSROOT/usr/include -DENABLE_SHARED=FALSE \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf libjpeg-turbo || exit 1
+export CFLAGS="${CFLAGS:-} ${OPT_CFLAGS} ${HARDEN_CFLAGS} ${TUNE_CFLAGS}"
+export CXXFLAGS="${CXXFLAGS:-} ${CFLAGS}"
+export LDFLAGS="${LDFLAGS:-} ${HARDEN_LDFLAGS}"
+
+verify_and_extract() {
+    archive="$1"
+    expected="$2"
+    echo "${expected}  ${archive}" > sha512sums
+    sha512sum -c sha512sums
+    tar --strip-components=1 -xf "${archive}"
+    rm "${archive}" sha512sums
+}
+
+# Build libiconv 1.17
+(
+    mkdir libiconv && cd libiconv
+    curl ${CURL_OPTS} -o libiconv.tar.gz \
+        "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz"
+    verify_and_extract libiconv.tar.gz \
+        "18a09de2d026da4f2d8b858517b0f26d853b21179cf4fa9a41070b2d140030ad9525637dc4f34fc7f27abca8acdc84c6751dfb1d426e78bf92af4040603ced86"
+    ./configure --prefix=$SYSROOT/usr --host="$CHOST" \
+        --enable-static --disable-shared --disable-nls
+    make
+    make install
+    cd .. && rm -rf libiconv
+)
+
+# Build OpenSSL 3.0.20 (LTS, replaces EOL 1.1.1k).
+# Static, no-shared, no-comp; install_sw skips docs and FIPS module to
+# save space and build time on the cross toolchain.
+(
+    mkdir openssl && cd openssl
+    curl ${CURL_OPTS} -o openssl.tar.gz \
+        "https://github.com/openssl/openssl/releases/download/openssl-3.0.20/openssl-3.0.20.tar.gz"
+    verify_and_extract openssl.tar.gz \
+        "3583a44bf9dec4deeade371d6861ce799821a85b32a4d9a8fcae253d78df8f93025ed73fb8efcaf23cc305b11d5aec439852444b3207d211f55660d1f89f5c9c"
+    ./Configure no-shared no-comp no-tests no-docs \
+        --prefix=$SYSROOT/usr --openssldir=$SYSROOT/usr \
+        --cross-compile-prefix=$CHOST- \
+        linux-armv4
+    make
+    DESTDIR="$SYSROOT" make install_sw
+    cd .. && rm -rf openssl
+)
+
+# Build curl 8.20.0 (replaces 7.75.0).
+# --with-openssl picks up the freshly built OpenSSL in $SYSROOT.
+(
+    mkdir curl && cd curl
+    curl ${CURL_OPTS} -o curl.tar.gz \
+        "https://github.com/curl/curl/releases/download/curl-8_20_0/curl-8.20.0.tar.gz"
+    verify_and_extract curl.tar.gz \
+        "0d8798d854a32d86ec260fdfabbcf983521a56589d8e5963543a88119e57d231c4a5f3e64737cff61845d837684c73ef58eff92f9c921ef03d87c1d37531e6bf"
+    ./configure --prefix=/usr --host="$CHOST" \
+        --enable-static --disable-shared \
+        --with-openssl --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
+        --disable-ldap --disable-ldaps --disable-rtsp --disable-dict \
+        --disable-telnet --disable-tftp --disable-pop3 --disable-imap \
+        --disable-smb --disable-smtp --disable-gopher --disable-mqtt \
+        --disable-manual --without-libpsl --without-libidn2 \
+        --without-librtmp --without-zstd --without-brotli
+    make
+    DESTDIR="$SYSROOT" make install
+    cd .. && rm -rf curl
+)
+
+# Build FreeType 2.13.3 (replaces 2.10.4, fixes CVE-2022-2740{4,5,6} etc.).
+# Pulled from the official GitHub mirror to keep checksum control on one host.
+(
+    mkdir freetype && cd freetype
+    curl ${CURL_OPTS} -o freetype.tar.gz \
+        "https://codeload.github.com/freetype/freetype/tar.gz/refs/tags/VER-2-13-3"
+    verify_and_extract freetype.tar.gz \
+        "fccfaa15eb79a105981bf634df34ac9ddf1c53550ec0b334903a1b21f9f8bf5eb2b3f9476e554afa112a0fca58ec85ab212d674dfd853670efec876bacbe8a53"
+    bash autogen.sh
+    ./configure --host="$CHOST" \
+        --enable-static=yes --enable-shared=no \
+        --without-zlib --without-png --without-bzip2 --without-harfbuzz \
+        --without-brotli
+    make
+    DESTDIR="$SYSROOT" make install
+    cd .. && rm -rf freetype
+)
+
+# Build libjpeg-turbo 3.0.4 (replaces 2.0.90).
+(
+    mkdir libjpeg-turbo && cd libjpeg-turbo
+    curl ${CURL_OPTS} -o libjpeg-turbo.tar.gz \
+        "https://codeload.github.com/libjpeg-turbo/libjpeg-turbo/tar.gz/refs/tags/3.0.4"
+    verify_and_extract libjpeg-turbo.tar.gz \
+        "f43e1b6b9d048e29e381796c71e1c34a04c0f1c52c1f462db9f9930cfc75d69a50861be2570a6a4adc26a4183b6601300fd9d5553c06bc042f0d32fc1e408ed9"
+    cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_SYSROOT="$SYSROOT" \
+        -DCMAKE_TOOLCHAIN_FILE=/usr/share/cmake/$CHOST.cmake \
+        -DCMAKE_INSTALL_LIBDIR=$SYSROOT/lib \
+        -DCMAKE_INSTALL_INCLUDEDIR=$SYSROOT/usr/include \
+        -DENABLE_SHARED=FALSE -DENABLE_STATIC=TRUE \
+        -DWITH_TURBOJPEG=FALSE
+    make
+    make install
+    cd .. && rm -rf libjpeg-turbo
+)

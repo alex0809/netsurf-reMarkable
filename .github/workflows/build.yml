@@ -1,16 +1,22 @@
 name: Build for reMarkable
 on: push
+
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build Docker image
         run: make image
       - name: Build
         run: make build
       - name: Archive binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: binary
           path: |
@@ -21,7 +27,7 @@ jobs:
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -29,4 +35,3 @@ jobs:
             LICENSE
             nsfb.tar.gz
             build/netsurf/nsfb
-            

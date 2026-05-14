@@ -3,13 +3,26 @@ fb_download_directory:/home/root/Downloads
 fb_xochitl_restart_command:systemctl restart remux
 
 scale:150
+
+# Security / privacy hardening: JS off, no NPAPI plugins, no popups, no
+# referer leak, ad blocker on. The user can flip any of these back from
+# the Preferences page if desired.
 enable_javascript:0
+enable_plugins:0
+block_popups:1
+block_advertisements:1
+send_referer:0
+
+# Paper Pro has 2 GiB of RAM and a 4-core A53, so we can afford more
+# parallel fetches and a bigger memory cache than the upstream defaults.
+max_cached_fetch_handles:8
+memory_cache_size:33554432
 
 fb_face_sans_serif:/opt/share/fonts/ttf-dejavu/DejaVuSans.ttf
 fb_face_sans_serif_bold:/opt/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf
 fb_face_sans_serif_italic:/opt/share/fonts/ttf-dejavu/DejaVuSans-Oblique.ttf
 fb_face_sans_serif_italic_bold:/opt/share/fonts/ttf-dejavu/DejaVuSans-BoldOblique.ttf
-fb_face_serif:/opt/share/fonts/ttf-dejavu/DejaVuSansMono.ttf
+fb_face_serif:/opt/share/fonts/ttf-dejavu/DejaVuSerif.ttf
 fb_face_serif_bold:/opt/share/fonts/ttf-dejavu/DejaVuSerif-Bold.ttf
 fb_face_cursive:/opt/share/fonts/ttf-dejavu/DejaVuSerif-Italic.ttf
 fb_face_monospace:/opt/share/fonts/ttf-dejavu/DejaVuSansMono.ttf

@@ -1,6 +1,19 @@
 FROM ghcr.io/toltec-dev/base:v3.1
 
-RUN apt-get update -y && apt-get install -y bison flex libexpat-dev libpng-dev git gperf automake libtool
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        automake \
+        bison \
+        ca-certificates \
+        flex \
+        git \
+        gperf \
+        libexpat-dev \
+        libpng-dev \
+        libtool \
+    && rm -rf /var/lib/apt/lists/*
 
 ADD scripts/install_dependencies.sh install_dependencies.sh
 
