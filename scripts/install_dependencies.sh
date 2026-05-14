@@ -63,20 +63,23 @@ verify_and_extract() {
         "https://github.com/openssl/openssl/releases/download/openssl-3.0.20/openssl-3.0.20.tar.gz"
     verify_and_extract openssl.tar.gz \
         "3583a44bf9dec4deeade371d6861ce799821a85b32a4d9a8fcae253d78df8f93025ed73fb8efcaf23cc305b11d5aec439852444b3207d211f55660d1f89f5c9c"
-    ./Configure no-shared no-comp no-tests \
-        --prefix=/usr --openssldir=/usr/ssl \
-        --cross-compile-prefix=$CHOST- \
-        linux-armv4
-    make
     # Toltec base v3.1 ships an older libssl 1.x in the cross sysroot.
-    # Wipe it before installing so our 3.0.20 headers/libs/pkgconfig
-    # land cleanly and curl 8.x doesn't pick up a stale opensslv.h.
+    # Wipe it before configuring/installing so curl 8.x doesn't pick up
+    # stale headers/.pc files alongside the new 3.0.20 build.
     rm -rf "$SYSROOT/usr/include/openssl"
     rm -f "$SYSROOT/usr/lib/libssl."* "$SYSROOT/usr/lib/libcrypto."*
     rm -f "$SYSROOT/usr/lib/pkgconfig/openssl.pc" \
           "$SYSROOT/usr/lib/pkgconfig/libssl.pc" \
           "$SYSROOT/usr/lib/pkgconfig/libcrypto.pc"
-    DESTDIR="$SYSROOT" make install
+    # DESTDIR doesn't reliably propagate through OpenSSL 3.x's sub-make
+    # invocations under this cross toolchain, so we install directly into
+    # the sysroot via an absolute --prefix and no DESTDIR.
+    ./Configure no-shared no-comp no-tests \
+        --prefix="$SYSROOT/usr" --openssldir="$SYSROOT/usr/ssl" \
+        --cross-compile-prefix=$CHOST- \
+        linux-armv4
+    make
+    make install_sw
     cd .. && rm -rf openssl
 )
 
