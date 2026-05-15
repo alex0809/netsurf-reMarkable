@@ -5,12 +5,26 @@
 # install Debian's official aarch64 cross toolchain. Debian multiarch is
 # enabled for arm64 so we can pull libexpat/libpng/zlib dev headers and
 # libs that match the cross target.
+#
+# Package roles, since we can't comment inside RUN:
+#   build-essential, autoconf, automake, libtool, bison, flex, gperf,
+#   cmake, make, pkg-config        -- host build tools (also used to run
+#                                     nsgenbind during the netsurf build)
+#   gcc-aarch64-linux-gnu, g++-... -- aarch64 cross toolchain
+#   binutils-aarch64-linux-gnu     -- aarch64 binutils
+#   libc6-dev-arm64-cross          -- aarch64 libc headers/libs
+#   libexpat1-dev:arm64            -- needed by libsvgtiny (and netsurf XML)
+#   libpng-dev:arm64               -- PNG image support in netsurf
+#   zlib1g-dev:arm64               -- common transitive dep
+#   libevdev-dev:arm64             -- libnsfb input layer
+#   libudev-dev:arm64              -- libnsfb input device discovery
+#   uuid-dev:arm64                 -- remarkable_xochitl_import.c uuids
+#   ca-certificates, curl, git     -- downloading sources
 
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Cross triplet, isolated sysroot for libs we build ourselves.
 ENV CHOST=aarch64-linux-gnu
 ENV SYSROOT=/opt/aarch64-rmpp
 ENV PKG_CONFIG_PATH="${SYSROOT}/usr/lib/pkgconfig"
@@ -18,29 +32,31 @@ ENV PKG_CONFIG_PATH="${SYSROOT}/usr/lib/pkgconfig"
 RUN dpkg --add-architecture arm64 \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        # Host build essentials (for nsgenbind and other native tools
-        # that NetSurf needs running on the build machine itself)
         build-essential \
-        # aarch64 cross toolchain
-        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+        gcc-aarch64-linux-gnu \
+        g++-aarch64-linux-gnu \
         binutils-aarch64-linux-gnu \
         libc6-dev-arm64-cross \
-        # arm64 system libs that the third-party deps and the netsurf
-        # frontend / libnsfb backend pull in. libevdev+libudev power the
-        # framebuffer surface's input loop; libuuid is used by
-        # remarkable_xochitl_import.c to mint xochitl document UUIDs.
-        libexpat1-dev:arm64 libpng-dev:arm64 zlib1g-dev:arm64 \
-        libevdev-dev:arm64 libudev-dev:arm64 uuid-dev:arm64 \
-        # Autotools + cmake
-        autoconf automake libtool \
-        bison flex gperf \
-        cmake make \
+        libexpat1-dev:arm64 \
+        libpng-dev:arm64 \
+        zlib1g-dev:arm64 \
+        libevdev-dev:arm64 \
+        libudev-dev:arm64 \
+        uuid-dev:arm64 \
+        autoconf \
+        automake \
+        libtool \
+        bison \
+        flex \
+        gperf \
+        cmake \
+        make \
         pkg-config \
-        # Misc
-        ca-certificates curl git \
+        ca-certificates \
+        curl \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
-# Pre-create the isolated sysroot so cross-libs land there cleanly.
 RUN mkdir -p "${SYSROOT}/usr/lib" "${SYSROOT}/usr/include"
 
 ADD scripts/install_dependencies.sh install_dependencies.sh
