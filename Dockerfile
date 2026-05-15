@@ -16,9 +16,12 @@
 #   libexpat1-dev:arm64            -- needed by libsvgtiny (and netsurf XML)
 #   libpng-dev:arm64               -- PNG image support in netsurf
 #   zlib1g-dev:arm64               -- common transitive dep
-#   libevdev-dev:arm64             -- libnsfb input layer
+#   libevdev-dev:arm64             -- libnsfb input layer (kept for build,
+#                                     final binary uses raw evdev syscalls
+#                                     via the Paper Pro DRM patches)
 #   libudev-dev:arm64              -- libnsfb input device discovery
 #   uuid-dev:arm64                 -- remarkable_xochitl_import.c uuids
+#   libdrm-dev:arm64               -- DRM/KMS surface backend (paperpro)
 #   ca-certificates, curl, git     -- downloading sources
 
 FROM debian:bookworm-slim
@@ -43,6 +46,7 @@ RUN dpkg --add-architecture arm64 \
         libevdev-dev:arm64 \
         libudev-dev:arm64 \
         uuid-dev:arm64 \
+        libdrm-dev:arm64 \
         autoconf \
         automake \
         libtool \

@@ -34,6 +34,7 @@ RUN dpkg --add-architecture arm64 \
         libevdev-dev:arm64 \
         libudev-dev:arm64 \
         uuid-dev:arm64 \
+        libdrm-dev:arm64 \
         autoconf \
         automake \
         libtool \

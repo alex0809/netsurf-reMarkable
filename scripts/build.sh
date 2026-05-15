@@ -37,8 +37,11 @@ NS_LDFLAGS_HARDEN="-Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,--gc-sections"
 
 # Pull in headers/libs from both our isolated sysroot ($SYSROOT/usr/...)
 # and the per-build workspace where ns-make-libs installs (inst-$HOST).
+# /usr/include/libdrm is added so libnsfb's DRM surface backend finds
+# <xf86drm.h> / <xf86drmMode.h> from libdrm-dev:arm64.
 export CFLAGS="${CFLAGS:-} ${NS_OPT_CFLAGS} ${NS_HARDEN_CFLAGS} ${NS_TUNE_CFLAGS} \
-    -I${SYSROOT}/usr/include -I$TARGET_WORKSPACE/inst-$HOST/include"
+    -I${SYSROOT}/usr/include -I$TARGET_WORKSPACE/inst-$HOST/include \
+    -I/usr/include/libdrm"
 export CXXFLAGS="${CXXFLAGS:-} ${CFLAGS}"
 export LDFLAGS="${LDFLAGS:-} ${NS_LDFLAGS_HARDEN} \
     -L${SYSROOT}/usr/lib -L$TARGET_WORKSPACE/inst-$HOST/lib"
@@ -55,16 +58,29 @@ export VARIANT=release
 # For local development, you can clone any repository into target workspace
 # before running this script.
 ns-clone
+
+# Drop the rM1/rM2 mxcfb surface backend into a DRM/KMS one for the
+# Paper Pro. The patch is idempotent (sentinel-guarded).
+PATCH_ROOT="/opt/netsurf/patches/paperpro-drm-surface"
+if [ -d "$PATCH_ROOT" ] && [ -d "$TARGET_WORKSPACE/libnsfb" ]; then
+    sh "$PATCH_ROOT/apply.sh" "$PATCH_ROOT" "$TARGET_WORKSPACE/libnsfb"
+fi
+
 ns-make-tools install
 ns-make-libs install
 
 cd $TARGET_WORKSPACE/netsurf/
 
-# libevdev / libudev / libuuid / pthread / libm are needed by the
-# framebuffer frontend at the final link. Previously the Toltec base
-# image silently provided libuuid via transitive deps; on Debian we have
-# to be explicit.
-export LDFLAGS="$LDFLAGS -levdev -ludev -luuid -lpthread -lm"
+# Final-link libs:
+#   -ldrm       : DRM/KMS surface backend
+#   -luuid      : remarkable_xochitl_import.c
+#   -ludev      : still needed because xochitl_import.c uses
+#                 udev_device_* helpers? — kept for safety, drops out
+#                 cleanly if unused thanks to ld --gc-sections
+#   -lpthread, -lm : standard
+# Note: NO -levdev. Our patched input.c uses raw evdev syscalls so the
+# binary does not pull libevdev.so.2 (which is absent on the rMPP).
+export LDFLAGS="$LDFLAGS -ldrm -luuid -ludev -lpthread -lm"
 
 export CC="${HOST}-gcc"
 export STRIP="${HOST}-strip"

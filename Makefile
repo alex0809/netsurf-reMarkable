@@ -37,6 +37,7 @@ build: ## Build netsurf in Docker container (bind mount BUILD_DIR as build direc
 	mkdir -p $(BUILD_DIR)
 	docker run --rm \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
+	    --mount type=bind,source=$(MAKEFILE_DIR)/patches,target=/opt/netsurf/patches,readonly \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR),target=/opt/netsurf/build \
 	    -e TARGET_WORKSPACE=/opt/netsurf/build \
 	    --user=$(UID):$(GID) netsurf-build:$(IMAGE_TAG) \
@@ -55,6 +56,7 @@ build: ## Build netsurf in Docker container (volume mount build directory except
 		chown -R $(UID):$(GID) /opt/netsurf/build
 	docker run --rm \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/scripts,target=/opt/netsurf/scripts,readonly \
+	    --mount type=bind,source=$(MAKEFILE_DIR)/patches,target=/opt/netsurf/patches,readonly \
 	    --mount type=volume,source=netsurf-build,target=/opt/netsurf/build \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/netsurf,target=/opt/netsurf/build/netsurf \
 	    --mount type=bind,source=$(MAKEFILE_DIR)/$(BUILD_DIR)/libnsfb,target=/opt/netsurf/build/libnsfb \
