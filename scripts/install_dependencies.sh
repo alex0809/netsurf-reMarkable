@@ -79,9 +79,12 @@ verify_and_extract() {
         "https://github.com/openssl/openssl/releases/download/openssl-3.0.20/openssl-3.0.20.tar.gz"
     verify_and_extract openssl.tar.gz \
         "3583a44bf9dec4deeade371d6861ce799821a85b32a4d9a8fcae253d78df8f93025ed73fb8efcaf23cc305b11d5aec439852444b3207d211f55660d1f89f5c9c"
+    # NOTE: no --cross-compile-prefix. We already export CC/CXX/AR/STRIP
+    # to the ${CHOST}- tools at the top of this script. Passing the prefix
+    # too would make OpenSSL build 'aarch64-linux-gnu-${CC}', doubling
+    # the triplet.
     ./Configure no-shared no-comp no-tests \
         --prefix="${SYSROOT}/usr" --openssldir="${SYSROOT}/usr/ssl" \
-        --cross-compile-prefix="${CHOST}-" \
         linux-aarch64
     make
     make install_sw
