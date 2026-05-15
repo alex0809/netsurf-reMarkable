@@ -47,6 +47,11 @@ export LDFLAGS="${LDFLAGS:-} ${NS_LDFLAGS_HARDEN} \
 # Debian, and without this we'd end up linking against the host's libs.
 export PKG_CONFIG_LIBDIR="${SYSROOT}/usr/lib/pkgconfig:${SYSROOT}/usr/local/lib/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig"
 
+# Also export VARIANT=release so libnsfb (and other NetSurf libs that
+# follow the same convention) drop -Werror. See the longer comment near
+# the final $MAKE invocation for rationale.
+export VARIANT=release
+
 # For local development, you can clone any repository into target workspace
 # before running this script.
 ns-clone
@@ -55,10 +60,24 @@ ns-make-libs install
 
 cd $TARGET_WORKSPACE/netsurf/
 
-# libevdev / pthread are picked up by the framebuffer frontend; -lm is needed
-# explicitly by some new libs.
-export LDFLAGS="$LDFLAGS -levdev -lpthread -lm"
+# libevdev / libudev / libuuid / pthread / libm are needed by the
+# framebuffer frontend at the final link. Previously the Toltec base
+# image silently provided libuuid via transitive deps; on Debian we have
+# to be explicit.
+export LDFLAGS="$LDFLAGS -levdev -ludev -luuid -lpthread -lm"
 
 export CC="${HOST}-gcc"
 export STRIP="${HOST}-strip"
-$MAKE TARGET=framebuffer NETSURF_FB_FONTLIB=freetype NETSURF_STRIP_BINARY=YES NETSURF_USE_LIBICONV_PLUG=NO NETSURF_USE_DUKTAPE=NO NETSURF_REMARKABLE=YES
+
+# VARIANT=release disables libnsfb's -Werror. Our hardening CFLAGS combined
+# with aarch64-specific warning patterns (stricter -Wcast-align in
+# particular) can trip warnings that the original armhf build never saw.
+# We want to ship, not chase pedantic warnings in third-party code we
+# don't own.
+$MAKE TARGET=framebuffer \
+    NETSURF_FB_FONTLIB=freetype \
+    NETSURF_STRIP_BINARY=YES \
+    NETSURF_USE_LIBICONV_PLUG=NO \
+    NETSURF_USE_DUKTAPE=NO \
+    NETSURF_REMARKABLE=YES \
+    VARIANT=release

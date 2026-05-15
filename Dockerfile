@@ -25,8 +25,12 @@ RUN dpkg --add-architecture arm64 \
         gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
         binutils-aarch64-linux-gnu \
         libc6-dev-arm64-cross \
-        # arm64 system libs that the third-party deps need
+        # arm64 system libs that the third-party deps and the netsurf
+        # frontend / libnsfb backend pull in. libevdev+libudev power the
+        # framebuffer surface's input loop; libuuid is used by
+        # remarkable_xochitl_import.c to mint xochitl document UUIDs.
         libexpat1-dev:arm64 libpng-dev:arm64 zlib1g-dev:arm64 \
+        libevdev-dev:arm64 libudev-dev:arm64 uuid-dev:arm64 \
         # Autotools + cmake
         autoconf automake libtool \
         bison flex gperf \
