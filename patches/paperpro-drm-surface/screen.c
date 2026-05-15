@@ -125,10 +125,15 @@ int fb_initialize(fb_state_t *state)
 
 	state->saved_crtc = drmModeGetCrtc(state->drm_fd, state->crtc_id);
 
+	/* Try RGB565 (16bpp) first. The Paper Pro's imx-drm LVDS panel
+	 * advertises 405x1084 even though the physical screen is 1620x2160,
+	 * suggesting the controller packs sub-pixels — and an XRGB8888
+	 * buffer renders as alternating-pixel stripes (32bpp data lookups
+	 * being read as 16bpp). RGB565 is the next natural attempt. */
 	struct drm_mode_create_dumb create = {
 		.width = width,
 		.height = height,
-		.bpp = 32,
+		.bpp = 16,
 	};
 	if (drmIoctl(state->drm_fd, DRM_IOCTL_MODE_CREATE_DUMB, &create) < 0) {
 		ERROR_LOG("DRM_IOCTL_MODE_CREATE_DUMB: %s", strerror(errno));
@@ -139,7 +144,7 @@ int fb_initialize(fb_state_t *state)
 	state->buf_handle = create.handle;
 	state->size = create.size;
 
-	if (drmModeAddFB(state->drm_fd, width, height, 24, 32,
+	if (drmModeAddFB(state->drm_fd, width, height, 16, 16,
 			 create.pitch, state->buf_handle, &state->fb_id) < 0) {
 		ERROR_LOG("drmModeAddFB: %s", strerror(errno));
 		drmModeFreeConnector(conn);
@@ -178,7 +183,7 @@ int fb_initialize(fb_state_t *state)
 
 	state->scrinfo.width = width;
 	state->scrinfo.height = height;
-	state->scrinfo.bpp = 32;
+	state->scrinfo.bpp = 16;
 	state->scrinfo.linelen = (int)create.pitch;
 
 	drmModeFreeConnector(conn);
