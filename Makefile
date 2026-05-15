@@ -9,6 +9,9 @@ export BUILD_DIR
 INSTALL_DESTINATION ?= 10.11.99.1
 IMAGE_TAG ?= latest
 CLANGD_CONTAINER ?= netsurf-clangd
+# Default build image. Set BASE_DOCKERFILE=Dockerfile.bullseye to switch
+# to the older glibc 2.31 base if the rMPP's runtime glibc is < 2.36.
+BASE_DOCKERFILE ?= Dockerfile
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
@@ -65,7 +68,7 @@ install: image build copy-resources copy-binary ## Build and copy binary and res
 uninstall: remove-resources remove-binary ## Uninstall binary and resources from device
 
 image: ## Build the Docker image that is used for building netsurf
-	docker build -t netsurf-build:$(IMAGE_TAG) .
+	docker build -f $(BASE_DOCKERFILE) -t netsurf-build:$(IMAGE_TAG) .
 
 copy-resources: ## Copy resources to device
 	ssh root@$(INSTALL_DESTINATION) mkdir -p /home/root/.netsurf
