@@ -1,0 +1,55 @@
+# Fallback Dockerfile based on Debian Bullseye (glibc 2.31) instead of
+# Bookworm (glibc 2.36). Use this if the preflight check on the Paper Pro
+# reports a glibc version older than 2.36 — Yocto 4.0 LTS firmwares ship
+# 2.35, some embedded boards stick at 2.31.
+#
+# Usage:
+#   docker build -f Dockerfile.bullseye -t netsurf-build:latest .
+# or:
+#   make image BASE_DOCKERFILE=Dockerfile.bullseye    (if the Makefile is
+#   not yet updated to honour BASE_DOCKERFILE, just docker-build manually)
+#
+# Note: GCC 10.2 here vs 12.2 in Bookworm — the optimisation difference
+# is negligible for our use; the wider glibc compatibility wins easily.
+
+FROM debian:bullseye-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ENV CHOST=aarch64-linux-gnu
+ENV SYSROOT=/opt/aarch64-rmpp
+ENV PKG_CONFIG_PATH="${SYSROOT}/usr/lib/pkgconfig"
+
+RUN dpkg --add-architecture arm64 \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        gcc-aarch64-linux-gnu \
+        g++-aarch64-linux-gnu \
+        binutils-aarch64-linux-gnu \
+        libc6-dev-arm64-cross \
+        libexpat1-dev:arm64 \
+        libpng-dev:arm64 \
+        zlib1g-dev:arm64 \
+        libevdev-dev:arm64 \
+        libudev-dev:arm64 \
+        uuid-dev:arm64 \
+        autoconf \
+        automake \
+        libtool \
+        bison \
+        flex \
+        gperf \
+        cmake \
+        make \
+        pkg-config \
+        ca-certificates \
+        curl \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p "${SYSROOT}/usr/lib" "${SYSROOT}/usr/include"
+
+ADD scripts/install_dependencies.sh install_dependencies.sh
+
+RUN ./install_dependencies.sh
