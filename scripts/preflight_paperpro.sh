@@ -119,4 +119,41 @@ df -h /home/root 2>/dev/null | first_n 2
 free 2>/dev/null | first_n 3
 
 echo
+echo "=== Qt / WebEngine presence (relevant to OPTION_E_BRIEF) =="
+echo "  Qt6 core libs:"
+find /usr/lib /usr/local/lib /opt 2>/dev/null \
+    -name "libQt6Core*" -o -name "libQt5Core*" 2>/dev/null | first_n 6
+echo "  Qt WebEngine libs:"
+find /usr/lib /usr/local/lib /opt 2>/dev/null \
+    -name "libQt*WebEngine*" 2>/dev/null | first_n 10
+echo "  Qt WebKit libs (older alternative):"
+find /usr/lib /usr/local/lib /opt 2>/dev/null \
+    -name "libQt*WebKit*" 2>/dev/null | first_n 6
+echo "  Qt platform plugins (for offscreen / eglfs):"
+find /usr/lib /usr/local/lib /opt 2>/dev/null \
+    -path "*/qt*/plugins/platforms/*" 2>/dev/null | first_n 10
+echo "  xochitl Qt deps (what xochitl actually pulls in):"
+if [ -x /usr/bin/xochitl ]; then
+    ldd /usr/bin/xochitl 2>/dev/null | grep -iE 'qt|web' | first_n 20
+else
+    echo "    /usr/bin/xochitl not found"
+fi
+echo "  WebEngine resources/assets:"
+find /usr/share /opt/share 2>/dev/null -name "*WebEngine*" -o -name "icudtl.dat" 2>/dev/null | first_n 6
+
+echo
+echo "=== DRM details (relevant if you want option C with DRM port) =="
+echo "  /sys/class/drm contents:"
+ls -la /sys/class/drm 2>/dev/null
+for f in /sys/class/drm/card0/device/uevent /sys/class/drm/card0/device/modalias; do
+    [ -r "$f" ] && { echo "  -- $f --"; cat "$f" 2>/dev/null; }
+done
+echo "  DRM driver name (via sysfs):"
+[ -r /sys/class/drm/card0/device/driver ] && readlink /sys/class/drm/card0/device/driver 2>/dev/null
+echo "  Connectors:"
+for c in /sys/class/drm/card0-*/status; do
+    [ -r "$c" ] && { printf "    %s : " "$c"; cat "$c"; }
+done
+
+echo
 echo "=== Done =="
